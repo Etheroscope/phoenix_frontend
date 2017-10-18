@@ -35,7 +35,10 @@ defmodule Etheroscope.Mixfile do
   #
   # Type `mix help deps` for examples and options.
   defp deps do
-    []
+    [
+      {:ecto, "~> 2.0"},
+      {:postgrex, "~> 0.11"}
+    ]
   end
 
   # Aliases are shortcuts or tasks specific to the current project.
