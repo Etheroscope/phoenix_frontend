@@ -1,14 +1,16 @@
 FROM elixir:1.5.1
 
+MAINTAINER Rafael Ballestiero <rafa.ballestiero@gmail.com>
+
 # System Env's
-ENV REFRESHED_AT 2017-04-05
+ENV REFRESHED_AT 2017-10-18
 ENV ELIXIR_VERSION 1.5.1
-ENV PHOENIX_VERSION 1.3.1
 ENV NODE_VERSION 7
 ENV PATH $PATH:node_modules/.bin:/opt/elixir-$ELIXIR_VERSION/bin
 
 # Install System Dependencies + Nodejs
 RUN apt-get update -q && apt-get upgrade -y \
+    && apt-get install apt-utils \
     && apt-get install -y apt-transport-https curl wget git make sudo locales locales-all ca-certificates \
     && apt-get update -q \
     && curl -sL https://deb.nodesource.com/setup_$NODE_VERSION.x | sudo -E bash - \
@@ -38,6 +40,7 @@ WORKDIR /app
 # ONBUILD ENV MIX_ENV prod
 
 ONBUILD COPY mix.* /app/
+ONBUILD COPY apps/**/mix.* /app/apps/**/mix.*
 ONBUILD RUN mix deps.get
 # ONBUILD RUN mix deps.get --only prod
 
