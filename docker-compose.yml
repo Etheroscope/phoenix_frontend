@@ -1,0 +1,20 @@
+version: '2'
+services:
+  db:
+    image: postgres:9.6.2
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+  web:
+    image: etheroscope
+    command: mix phx.server
+    environment:
+      - DOCKER=true
+    volumes:
+      - .:/app
+    ports:
+      - "4000:4000"
+    depends_on:
+      - db
