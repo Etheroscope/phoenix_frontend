@@ -19,9 +19,7 @@ services:
 
   web:
     image: etheroscope
-    command: mix phx.server
-    # environment:
-    #   - MIX_ENV=prod
+    command: mix do deps.get, ecto.create, ecto.migrate, phx.server
     links:
       - "db:db"
     volumes:

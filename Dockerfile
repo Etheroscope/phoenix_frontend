@@ -10,8 +10,7 @@ ENV PATH $PATH:node_modules/.bin:/opt/elixir-$ELIXIR_VERSION/bin
 
 # Install System Dependencies + Nodejs
 RUN apt-get update -q && apt-get upgrade -y \
-    && apt-get install -y apt-transport-https curl wget git make sudo locales locales-all ca-certificates \
-    &&  apt-get install --yes postgresql-client \
+    && apt-get install -y inotify-tools postgresql-client apt-transport-https curl wget git make sudo locales locales-all ca-certificates \
     && apt-get update -q \
     && curl -sL https://deb.nodesource.com/setup_$NODE_VERSION.x | sudo -E bash - \
     && sudo apt-get install -y nodejs \

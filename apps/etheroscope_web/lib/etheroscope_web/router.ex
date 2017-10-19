@@ -20,7 +20,7 @@ defmodule EtheroscopeWeb.Router do
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", EtheroscopeWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", EtheroscopeWeb do
+    pipe_through :api
+  end
 end
