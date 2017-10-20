@@ -23,7 +23,7 @@ defmodule Etheroscope.Mixfile do
   def application do
     [
       mod: {Etheroscope.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :ethereumex]
     ]
   end
 
@@ -36,7 +36,8 @@ defmodule Etheroscope.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:json, "~> 1.0"}
+      {:json, "~> 1.0"},
+      {:ethereumex, "~> 0.2.0"}
     ]
   end
 
