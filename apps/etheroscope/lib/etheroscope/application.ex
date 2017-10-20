@@ -13,7 +13,6 @@ defmodule Etheroscope.Application do
     import Supervisor.Spec, warn: false
 
     Supervisor.start_link([
-      supervisor(Etheroscope.Repo, [])
     ], strategy: :one_for_one, name: Etheroscope.Supervisor)
   end
 end
