@@ -22,6 +22,8 @@ services:
     command: mix do deps.get, ecto.create, ecto.migrate, phx.server
     links:
       - "db:db"
+    environment:
+      - MIX_ENV
     volumes:
       - .:/app
     ports:
