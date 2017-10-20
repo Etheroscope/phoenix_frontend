@@ -52,3 +52,5 @@ ONBUILD RUN mix deps.compile
 
 ONBUILD COPY . /app/
 ONBUILD RUN mix compile
+
+CMD iex -S mix
