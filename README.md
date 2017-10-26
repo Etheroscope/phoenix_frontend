@@ -13,12 +13,12 @@ In order to get your environment setup for development, follow these instruction
 
 ### Etheroscope
 
-This app contains the main business logic behind the backend. Any function that deals with transforming should be written here.
+This app contains the main business logic behind the backend. Any function that deals with transforming should be written here. See more [here](apps/etheroscope/README.md)
 
 ### Etheroscope Ecto
 
-This app interacts with the database. Any function that loads/stores data to/from the database should be placed here.
+This app interacts with the database. Any function that loads/stores data to/from the database should be placed here. See more [here](apps/etheroscope_ecto/README.md)
 
 ### Etheroscope Web
 
-This app manages connections to/from the backend. It will handle any calls to the backend API as well as any calls to external APIs we may need.
+This app manages connections to/from the backend. It will handle any calls to the backend API as well as any calls to external APIs we may need. See more [here](apps/etheroscope_web/README.md)
