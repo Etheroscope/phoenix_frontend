@@ -1,4 +1,4 @@
-defmodule EtheroscopeDb.Mixfile do
+defmodule EtheroscopeDB.Mixfile do
   use Mix.Project
 
   def project do
@@ -20,7 +20,7 @@ defmodule EtheroscopeDb.Mixfile do
   def application do
     [
       extra_applications: [:logger, :couchdb_connector],
-      mod: {EtheroscopeDb.Application, []}
+      mod: {EtheroscopeDB.Application, []}
     ]
   end
 

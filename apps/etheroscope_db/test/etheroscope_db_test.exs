@@ -1,8 +1,8 @@
-defmodule EtheroscopeDbTest do
+defmodule EtheroscopeDBTest do
   use ExUnit.Case
-  doctest EtheroscopeDb
+  doctest EtheroscopeDB
 
   test "greets the world" do
-    assert EtheroscopeDb.hello() == :world
+    assert EtheroscopeDB.hello() == :world
   end
 end
