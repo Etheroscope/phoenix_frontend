@@ -28,16 +28,13 @@ defmodule EtheroscopeDB.Mixfile do
   defp deps do
     [
       {:couchdb_connector, "~> 0.5.0"}
-      # {:dep_from_hexpm, "~> 0.3.0"},
-      # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"},
-      # {:sibling_app_in_umbrella, in_umbrella: true},
     ]
   end
 
   defp aliases do
     [
-      "couchdb.create": ["run lib/tasks/couchdb.create.ex"],
-      "couchdb.setup":  ["couchdb.create"]
+      # "couchdb.create": ["run lib/tasks/couchdb.create.exs"]
+      # "couchdb.setup":  ["couchdb.create"]
     ]
   end
 end

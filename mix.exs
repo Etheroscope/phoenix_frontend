@@ -5,7 +5,8 @@ defmodule Etheroscope.Umbrella.Mixfile do
     [
       apps_path: "apps",
       start_permanent: Mix.env == :prod,
-      deps: deps()
+      deps: deps(),
+      aliases: aliases()
     ]
   end
 
@@ -24,4 +25,10 @@ defmodule Etheroscope.Umbrella.Mixfile do
   defp deps do
     [{:distillery, "~> 1.3"}]
   end
+
+  defp aliases do
+    [
+    ]
+  end
+
 end
