@@ -6,15 +6,24 @@ defmodule EtheroscopeDB.Application do
   use Application
 
   def start(_type, _args) do
-    # List all child processes to be supervised
-    children = [
-      # Starts a worker by calling: EtheroscopeDB.Worker.start_link(arg)
-      # {EtheroscopeDB.Worker, arg},
-    ]
+    children = []
 
-    # See https://hexdocs.pm/elixir/Supervisor.html
-    # for other strategies and supported options
+    create_database()
+    # seed_database()
+
     opts = [strategy: :one_for_one, name: EtheroscopeDB.Supervisor]
     Supervisor.start_link(children, opts)
+  end
+
+  def create_database do
+    case Couchdb.Connector.Storage.storage_up(EtheroscopeDB.db_props) do
+      {:ok, _msg}   -> IO.puts "Database #{EtheroscopeDB.db_props.database} successfully created."
+      {:error, msg} -> IO.warn "Unable to create database: #{msg}"
+    end
+  end
+
+  def seed_database do
+    # not implemented
+    raise "Not implemented"
   end
 end
