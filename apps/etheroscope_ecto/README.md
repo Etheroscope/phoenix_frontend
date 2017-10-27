@@ -1,3 +1,0 @@
-# EtheroscopeEcto
-
-**TODO: Add description**
