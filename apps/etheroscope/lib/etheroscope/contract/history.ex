@@ -1,8 +1,5 @@
-defmodule Etheroscope.Contract do
-  @moduledoc """
-  Etheroscope.Contract defines the business logic behind handling and
-  transforming data as well as business logic.
-  """
+defmodule Etheroscope.Contract.History do
+  alias Etheroscope.Contract.History
 
   def fetch_history(contract_address, method) do
     # case Etheroscope.get_history(contract_address, method) do
@@ -11,5 +8,4 @@ defmodule Etheroscope.Contract do
     #     %{}
     # end
   end
-
 end
