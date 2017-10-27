@@ -1,6 +1,6 @@
-defmodule EtheroscopeDb do
+defmodule EtheroscopeDB do
   @moduledoc """
-  Documentation for EtheroscopeDb.
+  Documentation for EtheroscopeDB.
   """
 
   @doc """
@@ -8,7 +8,7 @@ defmodule EtheroscopeDb do
 
   ## Examples
 
-      iex> EtheroscopeDb.hello
+      iex> EtheroscopeDB.hello
       :world
 
   """

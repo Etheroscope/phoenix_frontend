@@ -1,4 +1,4 @@
-# EtheroscopeDb
+# EtheroscopeDB
 
 **TODO: Add description**
 
