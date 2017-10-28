@@ -24,6 +24,10 @@ services:
       - "db:db"
     environment:
       - MIX_ENV
+      - COUCHDB_USER
+      - COUCHDB_PASSWORD
+      - COUCHDB_DATABASE
+      - COUCHDB_HOSTNAME
     volumes:
       - .:/app
     ports:
