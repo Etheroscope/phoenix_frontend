@@ -17,7 +17,7 @@ This app contains the main business logic behind the backend. Any function that 
 
 ### Etheroscope Ecto
 
-This app interacts with the database. Any function that loads/stores data to/from the database should be placed here. See more [here](apps/etheroscope_ecto/README.md)
+This app interacts with the database. Any function that loads/stores data to/from the database should be placed here. See more [here](apps/etheroscope_db/README.md)
 
 ### Etheroscope Web
 
