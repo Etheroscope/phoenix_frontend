@@ -5,8 +5,8 @@ services:
     ports:
       - "5984:5984"
     environment:
-      - COUCHDB_USER=couchdb
-      - COUCHDB_PASSWORD=couchdb
+      - COUCHDB_USER
+      - COUCHDB_PASSWORD
     volumes_from:
       - dbdata
 
