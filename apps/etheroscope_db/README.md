@@ -1,6 +1,10 @@
 # EtheroscopeDB
 
-**TODO: Add description**
+This app will be used as a wrapper for the database. It will handle all the interaction with it and will deal with the cacheing and proper use of CouchDB functionalities such as views.
+
+## Dependencies
+
+  * couchdb_connecter: library that enables the use of CouchDB
 
 ## Installation
 
@@ -18,4 +22,3 @@ end
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at [https://hexdocs.pm/etheroscope_db](https://hexdocs.pm/etheroscope_db).
-
