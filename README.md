@@ -11,6 +11,14 @@ In order to get your environment setup for development, follow these instruction
 
 ## Structure
 
+These files exist in the umbrella app as well as in every app within:
+
+  * *config/*: Files to set system wide config variables in given environments.
+  * *mix.exs*: Define app properties (dependencies, aliases, etc.)
+
+
+## Apps
+
 ### Etheroscope
 
 This app contains the main business logic behind the backend. Any function that deals with transforming should be written here. See more [here](apps/etheroscope/README.md)

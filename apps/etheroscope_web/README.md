@@ -10,15 +10,17 @@ If it doesn't, you're going to have to start it manually:
 
 ## Structure
 
-### config
-
-Use the files below to set system wide config variables.
-
 ### lib/etheroscope_web
 
   * *channels*: not quite sure how to use them yet, but looks [promising](https://hexdocs.pm/phoenix/channels.html#content).
-  * *controllers*: handle calls to endpoints by running the desired code. After transforming data in conn and parameters, call `render conn, <JSON_FILE_NAME>, %{<PARAMS>}`
+  * *controllers*: handle calls to endpoints by running the desired code. After transforming data in conn and parameters, call `render conn, <JSON_FILE_NAME>, %{<PARAMS>}`.
+  * *templates*: not used for the API. Shouldn't be there anymore
+  * *views*: pattern match on the render calls from the controllers to return a key-value map that will then be returned as a JSON object.
+  * router.ex: add any new routes here.
 
+### test
+
+Test your controllers and views to make sure the right data is being passed through.
 
 ## Learn more
   * Official website: http://www.phoenixframework.org/
