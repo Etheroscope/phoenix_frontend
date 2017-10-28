@@ -23,10 +23,10 @@ use Mix.Config
 
 config :etheroscope_db,
   protocol: "http",
-  hostname: "db",
-  database: "etheroscope_dev",
-  port: 5984,
-  user:     System.get_env("COUCHDB_USERNAME") || "couchdb",
+  hostname: System.get_env("COUCHDB_HOSTNAME") || "db",
+  database: System.get_env("COUCHDB_DATABASE") || "etheroscope_dev",
+  port:     5984,
+  user:     System.get_env("COUCHDB_USER")     || "couchdb",
   password: System.get_env("COUCHDB_PASSWORD") || "couchdb"
 
 # It is also possible to import configuration files, relative to this
