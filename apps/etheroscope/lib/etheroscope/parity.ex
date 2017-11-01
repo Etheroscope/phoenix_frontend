@@ -12,4 +12,21 @@ defmodule Etheroscope.Parity do
     json["result"]
   end
 
+  defp filter_params(addr) do
+    start_block = Integer.to_charlist(Ethereumex.HttpClient.eth_block_number - 150000, 16)
+    %{
+      "fromBlock" => "0x#{start_block}",
+      "toAddress" => [addr]
+    }
+  end
+
+  def get_history(addr) do
+    start_time  = DateTime.utc_now()
+    start_block = Ethereumex.HttpClient.eth_block_number - 150000
+
+    IO.puts "From block: #{start_block}"
+
+    IO.puts Ethereumex.HttpClient.eth_new_filter(filter_params(addr))
+  end
+
 end

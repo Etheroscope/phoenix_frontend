@@ -2,7 +2,7 @@ use Mix.Config
 
 config :ethereumex,
   scheme: "http",
-  host: "parity.etheroscope.info",
+  host: "cloud-vm-46-90",
   port: 8545
 
 config :etheroscope,
