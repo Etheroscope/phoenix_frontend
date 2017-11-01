@@ -6,18 +6,11 @@
     - ["vars/default.yml"]
   roles:
     - role: common
-    - role: nodejs
+    - role: franklinkim.docker
+    - role: franklinkim.docker-compose
     - role: nginx
       
   tasks:
-    - name: Install global npm packages
-      npm: name={{ item }} global=yes
-      sudo: yes
-      become: True
-      with_items:
-      - n
-      - forever
-      
     - name: Make app dir
       sudo: no
       shell: mkdir -p {{ deploy_app_dir }}
@@ -34,19 +27,9 @@
       become: True
       force: True
       
-    - name: install npm packages for root
+    - name: run docker compose
       sudo: no
-      shell: chdir={{ deploy_app_dir }} npm run setup
-      become: True
-      
-    - name: build app
-      sudo: no
-      shell: chdir={{ deploy_app_dir }} npm run build
-      become: True
-      
-    - name: Start node 
-      shell: chdir={{deploy_app_dir}} npm run vm-start 
-      sudo: yes
+      shell: chdir={{ deploy_app_dir }} docker-compose up -d
       become: True
       
     - name: copy nginx virtual host file

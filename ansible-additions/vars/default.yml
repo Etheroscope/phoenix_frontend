@@ -5,3 +5,4 @@ server_name: etheroscope.info
 nginx_servers: ["localhost:8080"]
 deploy_dir: "~/{{ app_name }}"
 deploy_app_dir: "~/{{ app_name }}/{{ app_name }}-app"
+docker_compose_version: 2
