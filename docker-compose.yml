@@ -18,6 +18,7 @@ services:
     command: "true"
 
   web:
+    build: .
     image: etheroscope
     command: mix do deps.get, phx.server
     links:
