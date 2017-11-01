@@ -1,1 +1,1 @@
-test-backend.etheroscope.info ansible_connection=ssh ansible_ssh_user=etheroscope-user
+test-api.etheroscope.info ansible_connection=ssh ansible_ssh_user=etheroscope-user
