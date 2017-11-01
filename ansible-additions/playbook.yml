@@ -56,7 +56,7 @@
                 owner=root
                 group=root
       become: True
-      
+
     - name: link nginx virtual host file
       sudo: yes
       file: src="/etc/nginx/sites-available/{{app_name}}"
