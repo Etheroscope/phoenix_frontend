@@ -29,7 +29,7 @@ defmodule Etheroscope.Mixfile do
 
   # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test/support"]
-  defp elixirc_paths(_),     do: ["lib"]
+  defp elixirc_paths(_), do: ["lib"]
 
   # Specifies your project dependencies.
   #
@@ -37,6 +37,8 @@ defmodule Etheroscope.Mixfile do
   defp deps do
     [
       {:json, "~> 1.0"},
+      {:httpoison, "~> 0.11.1"},
+      {:poison, "~> 3.1"},
       {:ethereumex, "~> 0.2.0"}
     ]
   end
