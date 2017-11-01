@@ -22,4 +22,7 @@ defmodule EtheroscopeDB do
       password: Application.get_env(:etheroscope_db, :password)
     }
   end
+
+  def fetch(unique_id), do: Couchdb.Connector.get(db_props(), unique_id)
+
 end
