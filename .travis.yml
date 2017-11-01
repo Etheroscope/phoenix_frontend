@@ -14,7 +14,7 @@ script:
 before_deploy:
 - ./travis-before-deploy.sh
 - openssl aes-256-cbc -K $encrypted_a606928c050a_key -iv $encrypted_a606928c050a_iv
-  -in deploy_rsa.enc -out deploy_rsa -d
+  -in deploy_rsa.enc -out /tmp/deploy_rsa -d
 - echo "Adding SSH private key"
 - eval "$(ssh-agent -s)"
 - chmod 600 /tmp/deploy_rsa
