@@ -5,7 +5,7 @@ defmodule EtheroscopeWeb.ContractController do
     json conn, Etheroscope.Contract.fetch_contract(contract_address)
   end
 
-  def history(conn, %{"contract_address" => contract_address, "variable" => variable}) do
-    json conn, Etheroscope.Contract.fetch_history(contract_address, variable)
+  def history(conn, %{"contract_address" => contract_address}) do
+    json conn, Etheroscope.Contract.fetch_history(contract_address)
   end
 end
