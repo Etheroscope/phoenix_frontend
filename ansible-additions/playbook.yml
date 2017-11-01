@@ -22,7 +22,7 @@
       git: repo={{ repo_url }}
            ssh_opts="-o StrictHostKeyChecking=no"
            dest={{ deploy_app_dir }}
-           version={{ repo_version }}
+           version={{ lookup('env','TRAVIS_BRANCH') }}
            force=True
       become: True
       force: True
