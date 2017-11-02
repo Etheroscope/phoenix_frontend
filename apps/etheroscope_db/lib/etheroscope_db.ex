@@ -23,6 +23,9 @@ defmodule EtheroscopeDB do
     }
   end
 
-  def fetch(unique_id), do: Couchdb.Connector.get(db_props(), unique_id)
+  def fetch_filter(id),  do: fetch("filter/#{id}")
 
+  # HELPERS
+  defp fetch(id), do: Couchdb.Connector.get(db_props(), id)
+  defp write(id, params), do: Couchdb.Connector.create(db_props(), params, id)
 end
