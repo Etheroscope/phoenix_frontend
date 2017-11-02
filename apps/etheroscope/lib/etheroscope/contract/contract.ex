@@ -40,6 +40,7 @@ defmodule Etheroscope.Contract do
   end
 
   def fetch_history(contract_address, variable) do
+
     %{
       :test => "Hello world (history)",
       :contract_address => contract_address,
