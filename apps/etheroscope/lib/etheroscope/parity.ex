@@ -22,22 +22,24 @@ defmodule Etheroscope.Parity do
   end
 
   def setup_filter(addr) do
-    filter_db_id  = Etheroscope.hash_code(:history_filter, addr)
     filter_eth_id = addr
                   |> filter_params
                   |> Ethereumex.HttpClient.eth_new_filter
 
-    EtheroscopeDB.write(filter_db_id, %{"filter_id" => filter_eth_id})
+    EtheroscopeDB.write_filter(addr, %{"filter_id" => filter_eth_id})
   end
 
   def get_history(addr) do
-    case EtheroscopeDB.fetch_filter(addr) do
-      {:ok,   resp} ->
-        resp["filter_id"] |> Ethereumex.HttpClient.eth_get_filter_changes
-      {:error, err} ->
-        setup_filter(add)
-        # get_history(addr) again?
+    filter = case EtheroscopeDB.fetch_filter(addr) do
+      {:error, err} -> setup_filter(addr)
+      {:ok,   resp} -> {:ok, resp["filter_id"]}
     end
+    get_filter_changes(filter)
   end
 
+  defp get_filter_changes({:ok,    filter_id}), do: filter_id |> Ethereumex.HttpClient.eth_get_filter_changes
+  defp get_filter_changes({:error, error_msg}) do
+    raise "Error getting filter changes: #{error_msg}"
+    []
+  end
 end
