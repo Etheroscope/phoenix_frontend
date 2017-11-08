@@ -1,7 +1,7 @@
 repo_url: https://github.com/Etheroscope/backend-phoenix.git
 app_name: backend-react
 server_name: etheroscope.info
-nginx_servers: ["localhost:8080"]
+nginx_servers: ["localhost:4000"]
 deploy_dir: "~/{{ app_name }}"
 deploy_app_dir: "~/{{ app_name }}/{{ app_name }}-app"
 docker_compose_version: 1.16.0
