@@ -1,0 +1,3 @@
+hostname: etheroscope-production
+domains:
+  - production-api.etheroscope.info

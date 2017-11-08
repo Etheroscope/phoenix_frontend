@@ -6,11 +6,15 @@
     - ["vars/default.yml"]
   roles:
     - role: common
-    - role: franklinkim.docker
-    - role: franklinkim.docker-compose
     - role: nginx
       
   tasks:
+    - name: install docker-compose
+      sudo: yes
+      apt: pkg={{ item }} state=present
+      with_items:
+        - docker-compose
+        
     - name: Make app dir
       sudo: no
       shell: mkdir -p {{ deploy_app_dir }}
@@ -29,7 +33,7 @@
       
     - name: run docker compose
       sudo: no
-      shell: chdir={{ deploy_app_dir }} docker-compose up -d
+      shell: chdir={{ deploy_app_dir }} docker-compose -f docker-compose-vm.yml up -d
       become: True
       
     - name: copy nginx virtual host file
