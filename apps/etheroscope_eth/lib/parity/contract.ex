@@ -1,4 +1,4 @@
-defmodule EtheroscopeEth.Contract do
+defmodule EtheroscopeEth.Parity.Contract do
   @api_base_url "https://api.etherscan.io"
   @allowed_types [
     "uint",

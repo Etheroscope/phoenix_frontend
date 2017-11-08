@@ -1,8 +1,9 @@
 defmodule EtheroscopeWeb.ContractController do
   use EtheroscopeWeb, :controller
+  alias EtheroscopeEth.Parity.Contract
 
   def contract(conn, %{"contract_address" => contract_address}) do
-    case EtheroscopeEth.Contract.fetch_contract(contract_address) do
+    case Contract.fetch_contract(contract_address) do
       {:ok, contract} -> json conn, contract
       {:error, msg} ->
         put_status(conn, :internal_server_error)
@@ -11,7 +12,7 @@ defmodule EtheroscopeWeb.ContractController do
   end
 
   def history(conn, %{"contract_address" => contract_address}) do
-    case EtheroscopeEth.Contract.fetch_history(contract_address) do
+    case Contract.fetch_history(contract_address) do
       {:ok, history} -> json conn, history
       {:error, msg} ->
         put_status(conn, :internal_server_error)
