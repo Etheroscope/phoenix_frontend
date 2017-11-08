@@ -22,7 +22,7 @@ before_deploy:
 deploy:
   skip_cleanup: true
   provider: script
-  script: ls
+  script: ./travis-deploy.sh
   on:
     all_branches: true
 notifications:
