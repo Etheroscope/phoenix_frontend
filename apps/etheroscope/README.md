@@ -2,6 +2,15 @@
 
 App contain all business logic needed for backend.
 
+## Secrets
+
+To successfully run this application, you must have the following secrets in your `dev.secret.exs` and `prod.secret.exs`:
+
+```elixir
+config :etheroscope,
+  etherscan_api_key: <ETHERSCAN_API_KEY>
+```
+
 ## Structure
 
 ### lib
