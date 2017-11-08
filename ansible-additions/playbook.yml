@@ -1,0 +1,57 @@
+---
+- name: Deploy application
+  hosts: all
+  sudo: yes
+  vars_files:
+    - ["vars/default.yml"]
+  roles:
+    - role: common
+    - role: nginx
+      
+  tasks:
+    - name: install docker-compose
+      sudo: yes
+      apt: pkg={{ item }} state=present
+      with_items:
+        - docker-compose
+        
+    - name: Make app dir
+      sudo: no
+      shell: mkdir -p {{ deploy_app_dir }}
+      changed_when: False
+      become: True
+      
+    - name: Pull sources from the repository.
+      sudo: no
+      git: repo={{ repo_url }}
+           ssh_opts="-o StrictHostKeyChecking=no"
+           dest={{ deploy_app_dir }}
+           version={{ lookup('env','TRAVIS_BRANCH') }}
+           force=True
+      become: True
+      force: True
+      
+    - name: run docker compose
+      sudo: no
+      shell: chdir={{ deploy_app_dir }} docker-compose up -d
+      become: True
+      
+    - name: copy nginx virtual host file
+      sudo: yes
+      template: src="{{ inventory_dir }}/templates/nginx.j2"
+                dest="/etc/nginx/sites-available/{{app_name}}"
+                owner=root
+                group=root
+      become: True
+
+    - name: link nginx virtual host file
+      sudo: yes
+      file: src="/etc/nginx/sites-available/{{app_name}}"
+            dest="/etc/nginx/sites-enabled/{{app_name}}"
+            state=link
+      become: True
+      
+    - name: restart nginx
+      sudo: yes
+      service: name=nginx state=restarted
+      become: True
