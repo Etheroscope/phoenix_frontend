@@ -1,10 +1,5 @@
 use Mix.Config
 
-config :ethereumex,
-  scheme: "http",
-  host: "parity.etheroscope.info",
-  port: 8545
-
 config :etheroscope,
   etherscan_api_key: "0000000000000" # Set this in backend-phoenix/config/local.exs
 
