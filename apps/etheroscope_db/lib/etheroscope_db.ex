@@ -1,17 +1,8 @@
 defmodule EtheroscopeDB do
   @moduledoc """
-  Documentation for EtheroscopeDB.
+  EtheroscopeDB will contain all wrapping functions for the database.
   """
 
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> EtheroscopeDB.hello
-      :world
-
-  """
   def db_props do
     %{
       protocol: Application.get_env(:etheroscope_db, :protocol),
@@ -23,7 +14,9 @@ defmodule EtheroscopeDB do
     }
   end
 
-  def fetch_filter(id), do: fetch("filter/#{id}")
+  @spec fetch_filter(integer()) :: any()
+  def fetch_filter(id),         do: fetch("filter/#{id}")
+  @spec write_filter(integer(), any()) :: any()
   def write_filter(id, params), do: write("filter/#{id}", params)
 
   # HELPERS

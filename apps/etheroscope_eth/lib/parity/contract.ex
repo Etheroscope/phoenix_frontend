@@ -1,21 +1,8 @@
 defmodule EtheroscopeEth.Parity.Contract do
+  @behaviour EtheroscopeEth.Parity.Resource
+
   @api_base_url "https://api.etherscan.io"
-  @allowed_types [
-    "uint",
-    "uint8",
-    "uint16",
-    "uint32",
-    "uint64",
-    "uint128",
-    "uint256",
-    "int",
-    "int8",
-    "int16",
-    "int32",
-    "int64",
-    "int128",
-    "int256"
-  ]
+  @allowed_types ["uint", "uint8", "uint16", "uint32", "uint64", "uint128", "uint256", "int", "int8", "int16", "int32", "int64", "int128", "int256"]
 
   def abi_item_is_variable(abi_item) do
     abi_item["type"] == "function" and length(abi_item["inputs"]) == 0
@@ -23,32 +10,22 @@ defmodule EtheroscopeEth.Parity.Contract do
     and Enum.member?(@allowed_types, Enum.at(abi_item["outputs"], 0)["type"])
   end
 
-  def fetch_contract(contract_address) do
+  def fetch(contract_address) do
     api_key = Application.get_env(:etheroscope, :etherscan_api_key)
     url = "#{@api_base_url}/api?module=contract&action=getabi&address=#{contract_address}&apikey=#{api_key}"
-    case HTTPoison.get(url) do
+
+    with {:ok, resp} <- HTTPoison.get(url),
+         ""          <- Poison.decode!(resp.body)["result"]
+    do
+      {:ok, %{:variables => [], :error => "No ABI found"}}
+    else
       {:error, msg} -> {:error, msg}
-      {:ok, response} ->
-        response_body = Poison.decode!(response.body)
-
-        if (response_body["result"] == "") do
-          {:ok, %{:variables => [], :error => "No ABI found"}}
-        else
-          contract_abi = Poison.decode!(response_body["result"])
-          variables = Enum.filter(contract_abi, &abi_item_is_variable/1)
-          var_names = Enum.map(variables, fn (var) -> var["name"] end);
-          {:ok, %{:variables => var_names}}
-        end
+      result ->
+        var_names = result
+                    |> Poison.decode!
+                    |> Enum.filter(&abi_item_is_variable/1)
+                    |> Enum.map(fn (var) -> var["name"] end);
+        {:ok, %{:variables => var_names}}
     end
-  end
-
-  def fetch_history(contract_address) do
-    {
-      :ok,
-      %{
-        :test => "Hello world (history)",
-        :contract_address => contract_address
-      }
-    }
   end
 end

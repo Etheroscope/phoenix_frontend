@@ -20,7 +20,7 @@ use Mix.Config
 #
 #     config :logger, level: :info
 #
-local_config = "local.exs"
+# local_config = "local.exs"
 
 config :etheroscope_db,
   protocol: "http",
@@ -30,13 +30,14 @@ config :etheroscope_db,
   user:     System.get_env("COUCHDB_USER")     || "couchdb",
   password: System.get_env("COUCHDB_PASSWORD") || "couchdb"
 
-if (File.exists?(Path.join(Path.dirname(__ENV__.file), local_config))) do
-  import_config local_config
-end
+# if (File.exists?(Path.join(Path.dirname(__ENV__.file), local_config))) do
+#   import_config local_config
+# end
 # It is also possible to import configuration files, relative to this
 # directory. For example, you can emulate configuration per environment
 # by uncommenting the line below and defining dev.exs, test.exs and such.
 # Configuration from the imported file will override the ones defined
 # here (which is why it is important to import them last).
 #
-#     import_config "#{Mix.env}.exs"
+
+import_config "#{Mix.env}.exs"
