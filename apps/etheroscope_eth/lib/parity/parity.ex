@@ -4,12 +4,13 @@ defmodule EtheroscopeEth.Parity do
 
   @valid_filter_params ["fromBlock", "toBlock", "fromAddress", "toAddress"]
 
-  @spec trace_filter(map()) :: {atom, String.t} | Error.t
+  @spec trace_filter(map()) :: {:ok, String.t} | Error.t
   def trace_filter(params) do
     with true          <- validate_filter_params(params),
-         {:ok, result} <- request("trace_filter", params, [])
+         {:ok, result} <- request("trace_filter", [params], [])
     do
-      result
+      Logger.info result
+      {:ok, result}
     else
       false         -> {:error, "Invalid parameters"}
       {:error, msg} -> {:error, "The following error occured when requesting the filter: #{msg}"}

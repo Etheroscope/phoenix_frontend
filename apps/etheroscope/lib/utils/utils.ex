@@ -5,6 +5,7 @@ defmodule Etheroscope.Utils do
 
   defmacro __using__([]) do
     quote do
+      require Logger
       alias Etheroscope.Utils.Error
     end
   end
