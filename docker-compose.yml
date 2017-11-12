@@ -23,6 +23,7 @@ services:
     command: mix do deps.get, phx.server
     links:
       - "db:db"
+      - "parity:parity"
     environment:
       - MIX_ENV
       - COUCHDB_USER
@@ -33,3 +34,8 @@ services:
       - .:/app
     ports:
       - "4000:4000"
+
+  parity:
+    image: harshjv/testrpc
+    ports:
+      - "8545:8545"
