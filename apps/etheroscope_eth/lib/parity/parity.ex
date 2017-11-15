@@ -1,8 +1,14 @@
 defmodule EtheroscopeEth.Parity do
-  import Ethereumex.HttpClient
-  use Etheroscope.Utils
+  @moduledoc """
+    EtheroscopeEth.Parity serves as a wrapper for the Ethereumex library. It allows us
+  to be responsible for error handling as well as adding new functionality to it.
+  """
+  use Etheroscope.Util, :parity
+  import EtheroscopeEth.Client
 
-  @valid_filter_params ["fromBlock", "toBlock", "fromAddress", "toAddress"]
+  defp handle_timeout(do: block) do
+    Error.handle_error "A timeout error occurred with the Parity client", do: block
+  end
 
   @spec trace_filter(map()) :: {:ok, String.t} | Error.t
   def trace_filter(params) do
@@ -24,4 +30,6 @@ defmodule EtheroscopeEth.Parity do
   defp is_valid_param([p | ps]) when p in @valid_filter_params, do: is_valid_param(ps)
   defp is_valid_param(_),  do: false
 
+defmodule EtheroscopeEth.TimeoutError do
+    defexception message: "A timeout error has occurred with the Parity node."
 end

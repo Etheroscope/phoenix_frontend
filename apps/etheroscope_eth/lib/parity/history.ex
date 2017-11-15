@@ -3,7 +3,7 @@ defmodule EtheroscopeEth.Parity.History do
     EtheroscopeEth.Parity.History is the module containing functions to handle retrieval
   of a contract history from our Parity node.
   """
-  use Etheroscope.Utils
+  use Etheroscope.Util
   alias EtheroscopeEth.Parity
 
   @behaviour EtheroscopeEth.Parity.Resource
@@ -14,7 +14,7 @@ defmodule EtheroscopeEth.Parity.History do
     Logger.info "Fetching contract from block 0"
     result = Parity.trace_filter(filter_params(address))
 
-# 
+#
 #     const contract = await (contractABICache.get(address));
 # console.timeEnd('Contract retrieval');
 #
@@ -43,8 +43,8 @@ defmodule EtheroscopeEth.Parity.History do
 # return Promise.resolve(history);
   end
 
-  defp filter_params(address) do
-      %{ "toAddress" => [address] }
+  def filter_params(address) do
+      %{ "toAddress" => [address], "fromBlock" => Hex.to_hex(Parity.current_block_number - 2_000) }
   end
 
 end

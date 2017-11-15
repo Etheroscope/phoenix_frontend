@@ -5,8 +5,8 @@ services:
     ports:
       - "5984:5984"
     environment:
-      - COUCHDB_USER
-      - COUCHDB_PASSWORD
+      - COUCHDB_USER=couchdb
+      - COUCHDB_PASSWORD=couchdb
     volumes_from:
       - dbdata
 
@@ -23,19 +23,13 @@ services:
     command: mix do deps.get, phx.server
     links:
       - "db:db"
-      - "parity:parity"
     environment:
       - MIX_ENV
-      - COUCHDB_USER
-      - COUCHDB_PASSWORD
+      - COUCHDB_USER=couchdb
+      - COUCHDB_PASSWORD=couchdb
       - COUCHDB_DATABASE
       - COUCHDB_HOSTNAME
     volumes:
       - .:/app
     ports:
       - "4000:4000"
-
-  parity:
-    image: harshjv/testrpc
-    ports:
-      - "8545:8545"

@@ -1,6 +1,6 @@
-defmodule Etheroscope.Utils.Hex do
+defmodule Etheroscope.Util.Hex do
   @moduledoc """
-    Etheroscope.Utils.Hex is a collection of functions to handle, transform and apply
+    Etheroscope.Util.Hex is a collection of functions to handle, transform and apply
   functions to hex values returned from the Parity client.
   """
 

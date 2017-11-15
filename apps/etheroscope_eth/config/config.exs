@@ -23,7 +23,7 @@ use Mix.Config
 
 config :ethereumex,
   scheme: "http",
-  host: "parity",
+  host: "146.169.46.90",
   port: 8545
 
 # It is also possible to import configuration files, relative to this
