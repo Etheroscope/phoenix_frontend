@@ -3,7 +3,6 @@ defmodule EtheroscopeEcto.Parity.ContractABI do
   import Ecto.Changeset
   alias EtheroscopeEcto.Parity.ContractABI
 
-
   schema "contract_abis" do
     field :abi, :map
     field :address, :string

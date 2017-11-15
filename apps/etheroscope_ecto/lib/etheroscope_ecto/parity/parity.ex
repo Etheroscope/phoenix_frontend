@@ -6,7 +6,7 @@ defmodule EtheroscopeEcto.Parity do
   import Ecto.Query, warn: false
   alias EtheroscopeEcto.Repo
 
-  alias EtheroscopeEcto.Parity.ContractABI
+  alias EtheroscopeEcto.Parity.{ContractABI, Block}
 
   @doc """
   Returns the list of contract_abis.
@@ -35,7 +35,21 @@ defmodule EtheroscopeEcto.Parity do
       ** (Ecto.NoResultsError)
 
   """
-  def get_contract_abi!(id), do: Repo.get!(ContractABI, id)
+  def get_contract_abi_by_id!(id), do: Repo.get!(ContractABI, id)
+
+  @doc """
+  Gets a single contract_abi with its contract address.
+
+  ## Examples
+
+      iex> get_contract_abi("0xblah")
+      nil
+
+      iex> get_contract_abi("0x8EB0d17f99992Ae3225Cfff03CbB29Ca19d946c4")
+      %ContractABI{}
+
+  """
+  def get_contract_abi(addr), do: Repo.get_by(ContractABI, address: addr)
 
   @doc """
   Creates a contract_abi.
@@ -101,4 +115,26 @@ defmodule EtheroscopeEcto.Parity do
   def change_contract_abi(%ContractABI{} = contract_abi) do
     ContractABI.changeset(contract_abi, %{})
   end
+
+  @doc """
+  Creates a block.
+
+  ## Examples
+
+      iex> create_block(%{number: 12302, time: 123214})
+      {:ok, %Block{}}
+
+      iex> create_block(%{number: "wrong", time: "type"})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_block(attrs \\ %{}) do
+    %Block{}
+    |> Block.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def get_block_time!(block_number), do: Repo.get_by!(Block, number: block_number)
+  def get_block_time(block_number), do: Repo.get_by(Block, number: block_number)
+
 end

@@ -19,7 +19,7 @@ services:
 
   web:
     image: etheroscope
-    command: mix do deps.get, phx.server
+    command: mix do deps.get, ecto.migrate, phx.server
     links:
       - "db:db"
     environment:
