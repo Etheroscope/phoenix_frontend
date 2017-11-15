@@ -12,7 +12,8 @@ defmodule EtheroscopeEth.Parity.History do
     # fetch contract
 
     Logger.info "Fetching contract from block 0"
-    result = Parity.trace_filter(filter_params(address))
+    result   = Parity.trace_filter(filter_params(address))
+    # contract =
 
 #
 #     const contract = await (contractABICache.get(address));
