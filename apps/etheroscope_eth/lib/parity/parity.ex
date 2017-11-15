@@ -16,7 +16,7 @@ defmodule EtheroscopeEth.Parity do
          {:ok, result} <- request("trace_filter", [params], [])
     do
       IO.inspect result
-      {:ok, Parity.block_numbers(result)}
+      {:ok, result}
     else
       false         -> {:error, "Invalid parameters"}
       {:error, msg} -> {:error, "The following error occured when requesting the filter: #{msg}"}

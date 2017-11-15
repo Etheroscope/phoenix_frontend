@@ -26,7 +26,7 @@ defmodule EtheroscopeEth.Mixfile do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:ethereumex, "~> 0.2.0"}
+      {:ethereumex, github: "Etheroscope/ethereumex"}
     ]
   end
 end

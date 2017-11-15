@@ -24,7 +24,8 @@ use Mix.Config
 config :ethereumex,
   scheme: "http",
   host: "146.169.46.90",
-  port: 8545
+  port: 8545,
+  timeout: :infinity
 
 # It is also possible to import configuration files, relative to this
 # directory. For example, you can emulate configuration per environment

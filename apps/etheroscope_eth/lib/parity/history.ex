@@ -44,7 +44,7 @@ defmodule EtheroscopeEth.Parity.History do
   end
 
   def filter_params(address) do
-      %{ "toAddress" => [address], "fromBlock" => Hex.to_hex(Parity.current_block_number - 2_000) }
+      %{ "toAddress" => [address], "fromBlock" => Hex.to_hex(Parity.current_block_number - 200_000) }
   end
 
 end
