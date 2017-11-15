@@ -12,23 +12,25 @@ defmodule EtheroscopeEth.Parity do
 
   @spec trace_filter(map()) :: {:ok, String.t} | Error.t
   def trace_filter(params) do
-    with true          <- validate_filter_params(params),
+    with true          <- Parity.validate_filter_params(params),
          {:ok, result} <- request("trace_filter", [params], [])
     do
-      Logger.info result
-      {:ok, result}
+      IO.inspect result
+      {:ok, Parity.block_numbers(result)}
     else
       false         -> {:error, "Invalid parameters"}
       {:error, msg} -> {:error, "The following error occured when requesting the filter: #{msg}"}
     end
   end
 
-  @spec validate_filter_params(map()) :: boolean
-  def validate_filter_params(params), do: is_valid_param(Map.keys(params))
-
-  defp is_valid_param([]), do: true
-  defp is_valid_param([p | ps]) when p in @valid_filter_params, do: is_valid_param(ps)
-  defp is_valid_param(_),  do: false
+  @spec current_block_number() :: non_neg_integer()
+  def current_block_number do
+    handle_timeout do
+      {:ok, hex} = eth_block_number()
+      Hex.from_hex(hex)
+    end
+  end
+end
 
 defmodule EtheroscopeEth.TimeoutError do
     defexception message: "A timeout error has occurred with the Parity node."
