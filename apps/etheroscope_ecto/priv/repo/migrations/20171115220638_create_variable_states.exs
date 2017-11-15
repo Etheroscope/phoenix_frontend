@@ -2,7 +2,7 @@ defmodule EtheroscopeEcto.Repo.Migrations.CreateVariableStates do
   use Ecto.Migration
 
   def change do
-    create table(:blocks) do
+    create table(:variable_states) do
       add :address, :string
       add :variable, :string
       add :time, :integer

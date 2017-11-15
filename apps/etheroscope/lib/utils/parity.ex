@@ -4,6 +4,22 @@ defmodule Etheroscope.Util.Parity do
   """
 
   @valid_filter_params ["fromBlock", "toBlock", "fromAddress", "toAddress"]
+  @allowed_types ["uint", "uint8", "uint16", "uint32", "uint64", "uint128", "uint256", "int", "int8", "int16", "int32", "int64", "int128", "int256"]
+
+  def abi_variables(abi) do
+    filter_abi_variables(abi, [])
+  end
+
+  defp filter_abi_variables([%{
+                               "type" => "function",
+                               "inputs" => [],
+                               "outputs" => [%{"type" => type}],
+                               "name" => name
+                              } | abi], vars) when type in @allowed_types do
+    filter_abi_variables(abi, [name | vars])
+  end
+  defp filter_abi_variables([_ | abi], vars), do: filter_abi_variables(abi, vars)
+  defp filter_abi_variables([], vars), do: vars
 
   @spec block_numbers(nonempty_list()) :: MapSet.t()
   def block_numbers(transactions), do: filter_block_numbers(MapSet.new, transactions)

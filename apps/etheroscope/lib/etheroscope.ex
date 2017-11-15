@@ -9,11 +9,13 @@ defmodule Etheroscope do
   alias EtheroscopeEth.Parity.{Contract, History}
 
   def fetch_contract_abi(address) do
-    case EtheroscopeEcto.Parity.get_contract_abi(address) do
-      nil ->
-        contract_abi = Contract.fetch(address)
-        EtheroscopeEcto.Parity.create_contract_abi(address: address, abi: contract_abi)
-        {:ok, contract_abi}
+    with nil                 <- EtheroscopeEcto.Parity.get_contract_abi(address),
+         {:ok, contract_abi} <- Contract.fetch(address)
+         # variables            = Enum.filter(&abi_item_is_variable/1)
+    do
+      EtheroscopeEcto.Parity.create_contract_abi(%{address: address, abi: contract_abi})
+      {:ok, contract_abi}
+    else
       abi ->
         {:ok, abi}
     end

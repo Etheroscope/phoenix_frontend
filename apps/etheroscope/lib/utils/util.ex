@@ -7,6 +7,7 @@ defmodule Etheroscope.Util do
     quote do
       require Logger
       require Etheroscope.Util.Error
+      alias Etheroscope.Util
       alias Etheroscope.Util.{Error, Hex}
     end
   end
@@ -14,7 +15,7 @@ defmodule Etheroscope.Util do
   def parity do
     quote do
       unquote(essential())
-      alias Etheroscope.Util.Parity
+      import Etheroscope.Util.Parity
     end
   end
 
