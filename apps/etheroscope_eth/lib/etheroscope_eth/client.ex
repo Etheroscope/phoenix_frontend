@@ -2,7 +2,7 @@ defmodule EtheroscopeEth.Client do
   use Ethereumex.Client.Macro
   import Ethereumex.Config
   @moduledoc """
-    EtheroscopeEth.Parity.Client is a custom Ethereumex client.
+    EtheroscopeEth.Client is a custom Ethereumex client.
   """
 
   @spec single_request(map()) :: {:ok, any() | [any()]} | error

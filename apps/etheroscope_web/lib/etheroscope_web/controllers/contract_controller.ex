@@ -2,11 +2,12 @@ defmodule EtheroscopeWeb.ContractController do
   use EtheroscopeWeb, :controller
 
   def contract(conn, %{"contract_address" => contract_address}) do
-    case Etheroscope.fetch_contract(contract_address) do
+    case Etheroscope.fetch_contract_abi(contract_address) do
       {:ok, contract} -> json conn, contract
-      {:error, msg} ->
+      {:error, err} ->
+        Etheroscope.Util.Error.put_error_message(err)
         put_status(conn, :internal_server_error)
-        json conn, %{:error => "An error occured fetching the contract: #{msg}"}
+        json conn, %{:error => err}
     end
   end
 

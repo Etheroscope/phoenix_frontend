@@ -4,7 +4,7 @@ defmodule EtheroscopeEcto.ParityTest do
   alias EtheroscopeEcto.Parity
 
   describe "contract_abis" do
-    alias EtheroscopeEcto.Parity.ContractABI
+    alias EtheroscopeEcto.Parity.ContractState
 
     @valid_attrs %{abi: %{}, address: "some address"}
     @update_attrs %{abi: %{}, address: "some updated address"}
@@ -30,7 +30,7 @@ defmodule EtheroscopeEcto.ParityTest do
     end
 
     test "create_contract_abi/1 with valid data creates a contract_abi" do
-      assert {:ok, %ContractABI{} = contract_abi} = Parity.create_contract_abi(@valid_attrs)
+      assert {:ok, %ContractState{} = contract_abi} = Parity.create_contract_abi(@valid_attrs)
       assert contract_abi.abi == %{}
       assert contract_abi.address == "some address"
     end
@@ -42,7 +42,7 @@ defmodule EtheroscopeEcto.ParityTest do
     test "update_contract_abi/2 with valid data updates the contract_abi" do
       contract_abi = contract_abi_fixture()
       assert {:ok, contract_abi} = Parity.update_contract_abi(contract_abi, @update_attrs)
-      assert %ContractABI{} = contract_abi
+      assert %ContractState{} = contract_abi
       assert contract_abi.abi == %{}
       assert contract_abi.address == "some updated address"
     end
@@ -55,7 +55,7 @@ defmodule EtheroscopeEcto.ParityTest do
 
     test "delete_contract_abi/1 deletes the contract_abi" do
       contract_abi = contract_abi_fixture()
-      assert {:ok, %ContractABI{}} = Parity.delete_contract_abi(contract_abi)
+      assert {:ok, %ContractState{}} = Parity.delete_contract_abi(contract_abi)
       assert_raise Ecto.NoResultsError, fn -> Parity.get_contract_abi!(contract_abi.id) end
     end
 

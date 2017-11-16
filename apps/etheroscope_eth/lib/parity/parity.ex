@@ -15,7 +15,6 @@ defmodule EtheroscopeEth.Parity do
     with true          <- validate_filter_params(params),
          {:ok, result} <- request("trace_filter", [params], [])
     do
-      IO.inspect result
       {:ok, result}
     else
       false         -> {:error, "Invalid parameters"}

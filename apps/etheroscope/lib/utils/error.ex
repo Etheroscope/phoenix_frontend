@@ -8,8 +8,12 @@ defmodule Etheroscope.Util.Error do
 
   @type t :: {:error, [%{atom() => String.t()}]}
 
+  @spec build_error(atom() | String.t() | map()) :: Error.t()
+  def build_error(error) , do: build_error([], error)
+
   @spec build_error(Error.t(), String.t(), atom()) :: Error.t()
   def build_error(error, msg, type) , do: build_error_h(error, %{msg: msg, type: type})
+
   def build_error(error, err_msg) when is_binary(err_msg), do: build_error_h(error, %{msg: err_msg})
   def build_error(error, err_type) when is_atom(err_type), do: build_error_h(error, %{type: err_type})
   def build_error(error, err_map) when is_map(err_map),    do: build_error_h(error, err_map)
@@ -29,7 +33,7 @@ defmodule Etheroscope.Util.Error do
     end
   end
 
-  def error_message({:error, errors}) do
+  def put_error_message({:error, errors}) do
     for err <- errors do
       msg  = Map.get(err, :msg, "An error occured.")
       type = Map.get(err, :msg, ":error")

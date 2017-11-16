@@ -3,10 +3,11 @@ defmodule EtheroscopeEcto.Repo.Migrations.CreateVariableStates do
 
   def change do
     create table(:variable_states) do
-      add :address, :string
       add :variable, :string
-      add :time, :integer
+      add :block_number, :integer
       add :value, :integer
+
+      add :contract_id, references(:contracts)
 
       timestamps()
     end
