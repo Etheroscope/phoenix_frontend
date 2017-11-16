@@ -1,34 +1,29 @@
 version: '2'
 services:
   db:
-    image: couchdb:1.6
+    image: postgres:9.6.2
     ports:
-      - "5984:5984"
+      - "5432:5432"
     environment:
-      - COUCHDB_USER
-      - COUCHDB_PASSWORD
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
     volumes_from:
       - dbdata
 
   # for persistance of database data
   dbdata:
-    image: couchdb:1.6
+    image: postgres:9.6.2
     volumes:
-      - /var/lib/couchdb
+      - /var/lib/postgres
     command: "true"
 
   web:
-    build: .
     image: etheroscope
-    command: mix do deps.get, phx.server
+    command: mix do deps.get, ecto.migrate, phx.server
     links:
       - "db:db"
     environment:
       - MIX_ENV
-      - COUCHDB_USER
-      - COUCHDB_PASSWORD
-      - COUCHDB_DATABASE
-      - COUCHDB_HOSTNAME
     volumes:
       - .:/app
     ports:
