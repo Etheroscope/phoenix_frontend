@@ -39,7 +39,6 @@ defmodule EtheroscopeEth.Parity do
 
   @spec variable_value(keccak_var, String.t(), String.t()) :: {:ok, String.t()} | Error.t
   def variable_value({:ok, variable}, address, block_number) do
-    Logger.info "Running eth_call on #{variable} in #{address} at block #{block_number}"
     EtheroscopeEth.Client.eth_call(%{ "to" => address, "data" => variable}, block_number)
   end
   def variable_value({:error, error}, address, block_number) do

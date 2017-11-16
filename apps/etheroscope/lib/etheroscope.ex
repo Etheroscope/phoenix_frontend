@@ -36,7 +36,9 @@ defmodule Etheroscope do
     with {:ok, blocks} <- Contract.fetch_contract_block_numbers(address)
     do
       for block <- blocks do
-        VariableState.fetch_variable_state(address, variable)
+        Logger.info "Fetching #{variable} for contract #{address} on block #{block}"
+        VariableState.fetch_variable_state(address, variable, block)
+        Logger.info "Fetched #{variable} for contract #{address} on block #{block}"
       end
     end
   end

@@ -33,12 +33,13 @@ defmodule EtheroscopeEth.Parity.Contract do
     end
   end
 
+  @spec fetch_block_numbers(binary()) :: {:ok, MapSet.t()} | Error.t
   def fetch_block_numbers(address) do
     Logger.info "Fetching: block numbers for #{address}"
     case address |> format_filter_params |> Parity.trace_filter do
       {:ok, ts} ->
         Logger.info "Fetched: block numbers for #{address}"
-        block_numbers(ts)
+        {:ok, block_numbers(ts)}
       {:error, err} ->
         Logger.error "Fetching block numbers #{address} failed with error #{err}"
         Error.build_error(err, "Error fetching block numbers in EtheroscopeEth.Parity.Contract.fetch_block_numbers(#{address})")

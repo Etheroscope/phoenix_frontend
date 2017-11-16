@@ -10,7 +10,7 @@ defmodule EtheroscopeEth.Parity.Block do
 
   def start_block do
     case Parity.current_block_number do
-      {:ok, num} -> Hex.to_hex(num - 75_000)
+      {:ok, num} -> Hex.to_hex(num - 5_000)
       unknown     -> unknown
     end
   end

@@ -21,10 +21,12 @@ defmodule EtheroscopeEth.Parity.VariableState do
   """
   @spec fetch({String.t(), String.t(), integer()}) :: {:ok, integer()} | Error.t()
   def fetch({address, variable_name, block_number}) do
-    variable_name
-    |> Parity.keccak_value
-    |> Parity.variable_value(address, Hex.to_hex(block_number))
-    |> Hex.from_hex
+    Logger.info "[ETH] Fetching #{variable_name} in #{address} at block #{block_number}"
+    {:ok, var} = variable_name
+                |> Parity.keccak_value
+                |> Parity.variable_value(address, Hex.to_hex(block_number))
+    Logger.info "[ETH] Fetched #{variable_name} with value #{var} = #{Hex.from_hex(var)}"
+    Hex.from_hex(var)
   end
   def fetch(_), do: Error.build_error(:badarg)
 end

@@ -10,6 +10,5 @@ defmodule EtheroscopeEcto.Repo.Migrations.CreateContracts do
 
       timestamps()
     end
-
   end
 end

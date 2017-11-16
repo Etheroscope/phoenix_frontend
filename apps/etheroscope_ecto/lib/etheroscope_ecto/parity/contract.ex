@@ -56,14 +56,17 @@ defmodule EtheroscopeEcto.Parity.Contract do
 
   @spec fetch_contract_block_numbers(String.t()) :: {:ok, Ecto.Schema.t} | {:error, Ecto.Changeset.t}
   def fetch_contract_block_numbers(addr) do
-    with {:ok, contract} <- fetch_contract(addr),
-         []              <- contract.blocks,
-         {:ok, blocks}   <- EtheroscopeEth.Parity.Contract.fetch_block_numbers(addr)
+    with {:ok, contract}     <- fetch_contract(addr),
+         []                  <- contract.blocks,
+         {:ok, block_set}    <- EtheroscopeEth.Parity.Contract.fetch_block_numbers(addr),
+         {:ok, new_contract} <- update_contract(contract, %{blocks: MapSet.to_list(block_set)})
     do
-      {:ok, update_contract(contract, %{blocks: blocks}).blocks}
+      {:ok, new_contract.blocks}
     else
       {:error, err}     -> Error.build_error(err, "[DB] Fetch contract block numbers failed.")
-      blocks = [_b|_bs] -> {:ok, blocks}
+      blocks = [_b|_bs] ->
+        IO.inspect(blocks)
+        {:ok, blocks}
     end
   end
 
@@ -77,12 +80,12 @@ defmodule EtheroscopeEcto.Parity.Contract do
 
   @spec fetch_contract_variables(String.t()) :: {:ok, Ecto.Schema.t} | {:error, Ecto.Changeset.t}
   def fetch_contract_variables(addr) do
-    with {:ok, contract} <- fetch_contract(addr),
-         []              <- contract.variables,
-         vars             = abi_variables(contract.abi),
-         {:ok, new_ctrt} <- update_contract(contract, %{variables: vars})
+    with {:ok, contract}     <- fetch_contract(addr),
+         []                  <- contract.variables,
+         vars                 = abi_variables(contract.abi),
+         {:ok, new_contract} <- update_contract(contract, %{variables: vars})
     do
-      {:ok, new_ctrt.variables}
+      {:ok, new_contract.variables}
     else
       {:error, err}   -> Error.build_error(err, "[DB] Fetch contract variables failed.")
       vars = [_v|_vs] -> {:ok, vars}

@@ -15,8 +15,8 @@ defmodule EtheroscopeEcto.Parity.VariableState do
   end
 
   @doc false
-  def changeset(%VariableState{} = contract_abi, attrs) do
-    contract_abi
+  def changeset(%VariableState{} = variable_state, attrs) do
+    variable_state
     |> cast(attrs, [:address, :variable, :block_number, :value])
     |> validate_required([:address, :variable, :block_number, :value])
   end
@@ -28,24 +28,26 @@ defmodule EtheroscopeEcto.Parity.VariableState do
     |> Repo.insert()
   end
 
-  @spec update_variable_state(struct(), map()) :: {:ok, Ecto.Schema.t} | {:error, Ecto.Changeset.t}
-  def update_variable_state(variable_state, attrs \\ %{}) do
-    variable_state
-    |> VariableState.changeset(attrs)
-    |> Repo.update()
+
+  @spec fetch_variable_state(String.t(), String.t(), integer()) :: {:ok, Ecto.Schema.t} | {:error, Ecto.Changeset.t}
+  def fetch_variable_state(address, variable, block_number) do
+    with {:ok, contract} <- Contract.fetch_contract(address),
+         nil             <- get_variable_state(contract, variable, block_number),
+         {:ok, value}    <- EtheroscopeEth.Parity.VariableState.fetch_value(address, variable, block_number)
+    do
+      contract
+      |> Ecto.build_assoc(:variable_states, %{ value: value, block_number: block_number, variable: variable })
+      |> Repo.insert
+    else
+      {:error, chgset} -> Error.build_error(chgset.errors, "[DB] Fetch variable state for #{variable} failed.")
+      res = {:ok, _v}  -> res
+    end
   end
 
-  def fetch_variable_state(address, variable, block_number) do
-    with nil          <- Repo.get_by(VariableState, address: address, variable: variable, block_number: block_number),
-         {:ok, value} <- EtheroscopeEth.Parity.VariableState.fetch_value(address, variable, block_number)
-    do
-      create_variable_state(%{
-        value: value,
-        block_number: block_number,
-        variable: variable,
-        address: address
-      })
-    end
+  defp get_variable_state(contract, variable, block_number) do
+    contract
+    |> Ecto.assoc(:variable_states)
+    |> Repo.get_by(variable: variable, block_number: block_number)
   end
 
 end
