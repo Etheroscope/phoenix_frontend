@@ -15,6 +15,10 @@ defmodule EtheroscopeEth.Parity.Block do
     end
   end
 
+  def fetch(_x) do
+    nil
+  end
+
   # def process_blocks(x), do: IO.inspect x
 
 end

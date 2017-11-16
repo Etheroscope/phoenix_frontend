@@ -6,7 +6,7 @@ defmodule EtheroscopeEth.Parity.Contract do
   @api_base_url "https://api.etherscan.io"
 
   defp handle_etherscan_error(do: block) do
-    Error.handle_error "There seems to be an issue with Etherscan", do: block
+    Etheroscope.Util.Error.handle_error "There seems to be an issue with Etherscan", do: block
   end
 
   @spec fetch(binary()) :: {:ok, map()} | Error.t

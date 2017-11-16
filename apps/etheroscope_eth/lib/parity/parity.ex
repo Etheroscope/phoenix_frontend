@@ -6,7 +6,7 @@ defmodule EtheroscopeEth.Parity do
   use Etheroscope.Util, :parity
   import EtheroscopeEth.Client
 
-  @type keccak_var :: <<_ ::80>>
+  @type keccak_var :: {atom, <<_ ::80>>}
 
   @method_id_size 10
 
@@ -28,19 +28,24 @@ defmodule EtheroscopeEth.Parity do
     Hex.from_hex(eth_block_number())
   end
 
-  @spec keccak_value(string()) :: {:ok, string} | Error.t
+  @spec keccak_value(String.t()) :: {:ok, String.t()} | Error.t
   def keccak_value(var) do
     # create hash for variable name with empty parenthises
     hash = Base.encode16(var <> "()")
     case EtheroscopeEth.Client.web3_sha3("0x" <> hash) do
-      {:ok, hex} -> {:ok, String.slice(hex, 0, @method_id_size)}
-      other      -> other
+      {:ok, hex}    -> {:ok, String.slice(hex, 0, @method_id_size)}
+      {:error, err} -> Error.build_error([], err, :bad_arg)
     end
   end
 
-  @spec variable_value(keccak_var, string(), string()) :: {:ok, string()} | Error.t
-  def variable_value(variable, address, block_number) do
+  @spec variable_value(keccak_var, String.t(), String.t()) :: {:ok, String.t()} | Error.t
+  def variable_value({:ok, variable}, address, block_number) do
+    Logger.info "Running eth_call on #{variable} in #{address} at block #{block_number}"
     EtheroscopeEth.Client.eth_call(%{ "to" => address, "data" => variable}, block_number)
+  end
+  def variable_value({:error, error}, address, block_number) do
+    # head of error list should be the variable
+    Error.build_error(error, "Couldn't fetch from contract (#{address}) at block #{block_number}")
   end
 
 end

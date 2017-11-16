@@ -58,7 +58,7 @@ defmodule EtheroscopeEth.Parity.History do
   def fetch_variable_state(address, variable_name, block_number) do
     variable_name
       |> Parity.keccak_value
-      |> Parity.variable_value(address, block_number)
+      |> Parity.variable_value(address, Hex.to_hex(block_number))
   end
 
   def filter_params(address) do
