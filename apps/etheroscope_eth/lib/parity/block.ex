@@ -6,8 +6,15 @@ defmodule EtheroscopeEth.Parity.Block do
   use Etheroscope.Util, :parity
   alias EtheroscopeEth.Parity
 
-  def start_block, do: Hex.to_hex(Parity.current_block_number - 15_000)
+  @behaviour EtheroscopeEth.Parity.Resource
 
-  def process_blocks(x), do: IO.inspect x
+  def start_block do
+    case Parity.current_block_number do
+      {:ok, num} -> Hex.to_hex(num - 75_000)
+      unknown     -> unknown
+    end
+  end
+
+  # def process_blocks(x), do: IO.inspect x
 
 end

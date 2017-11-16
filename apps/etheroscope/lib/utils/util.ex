@@ -6,9 +6,9 @@ defmodule Etheroscope.Util do
   def essential do
     quote do
       require Logger
-      require Etheroscope.Util.Error
       alias Etheroscope.Util
-      alias Etheroscope.Util.{Error, Hex}
+      alias Util.Hex
+      require Util.Error
     end
   end
 
