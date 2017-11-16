@@ -5,4 +5,4 @@ config :ethereumex,
   host: "parity.etheroscope.info",
   port: 8545
 
-import_config "#{Mix.env}.exs"
+# import_config "#{Mix.env}.exs"
