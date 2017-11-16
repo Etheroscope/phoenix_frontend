@@ -25,17 +25,13 @@ defmodule EtheroscopeEth.Parity do
 
   @spec current_block_number() :: non_neg_integer()
   def current_block_number do
-    eth_block_number()
-      |> Hex.from_hex(hex)
-    case  do
-      {:ok, hex}     -> Hex.from_hex(hex)
-      {:error, msg}  -> {:error, %{"The following error occured with the Parity client: #{msg}"}
-    end
+    Hex.from_hex(eth_block_number())
   end
 
   @spec keccak_value(string()) :: {:ok, string} | Error.t
   def keccak_value(var) do
-    hash = Base.encode16(var)
+    # create hash for variable name with empty parenthises
+    hash = Base.encode16(var <> "()")
     case EtheroscopeEth.Client.web3_sha3("0x" <> hash) do
       {:ok, hex} -> {:ok, String.slice(hex, 0, @method_id_size)}
       other      -> other
@@ -49,6 +45,4 @@ defmodule EtheroscopeEth.Parity do
 
 end
 
-defmodule EtheroscopeEth.TimeoutError do
-    defexception message: "A timeout error has occurred with the Parity node."
-end
+defmodule EtheroscopeEth.TimeoutError, do: defexception message: "A timeout error has occurred with the Parity node."

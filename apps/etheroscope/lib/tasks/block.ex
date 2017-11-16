@@ -7,8 +7,8 @@ defmodule EtheroscopeEth.Tasks.Block do
 
   def run(block_number) do
     case EtheroscopeEcto.Parity.get_block_time(block_number) do
-      {:ok,    block_time} -> block_time
-      # {:error, }
+      {:ok, block_time} -> block_time
+      {:error, msg}     -> EtheroscopeEth.Parity.Block.fetch()
     end
   end
 end

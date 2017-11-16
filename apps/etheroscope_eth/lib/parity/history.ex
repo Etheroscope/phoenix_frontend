@@ -14,12 +14,11 @@ defmodule EtheroscopeEth.Parity.History do
     Logger.info "Starting from block #{Block.start_block()}"
 
     with contract   = Etheroscope.fetch_contract_abi(address),
-         {:ok, ts}  <- address |> filter_params |> Parity.trace_filter
-         # block_nums = block_numbers(ts)
+         {:ok, ts}  <- address |> filter_params |> Parity.trace_filter,
+         block_nums = block_numbers(ts)
     do
-      ts
-      # File.write('data/doa_response.txt', Poison.encode!(ts), [:binary])
-      # Block.process_blocks(block_nums)
+      # variable value at first block
+      fetch_variable_state(address, variable, block_nums |> MapSet.to_list |> hd)
     end
 
     # console.time('Contract retrieval');
@@ -54,10 +53,10 @@ defmodule EtheroscopeEth.Parity.History do
     # console.timeEnd('Whole history');
     # return history;
   end
-  def fetch(_), do: {:error, :badarg}
+  def fetch(_), do: Error.build_error(:badarg)
 
-  def fetch_variable_state(address, variable, block_number) do
-    variable
+  def fetch_variable_state(address, variable_name, block_number) do
+    variable_name
       |> Parity.keccak_value
       |> Parity.variable_value(address, block_number)
   end
