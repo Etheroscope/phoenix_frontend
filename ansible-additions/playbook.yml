@@ -36,6 +36,14 @@
       shell: chdir={{ deploy_app_dir }} docker-compose up -d
       become: True
       
+    - name: remove stopped docker containers
+      become: True
+      shell: chdir={{ deploy_app_dir }} docker rm $(docker ps -qa --no-trunc --filter "status=exited")
+      
+    - name: remove unused docker images
+      become: True
+      shell: chdir={{ deploy_app_dir }} docker rmi $(docker images | grep "none" | awk '/ / { print $3 }')
+      
     - name: copy nginx virtual host file
       sudo: yes
       template: src="{{ inventory_dir }}/templates/nginx.j2"
