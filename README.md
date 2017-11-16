@@ -11,16 +11,7 @@ In order to get your environment setup for development, follow these instruction
 
 ### Running without Docker
 
-First, set up your local database configuration. To do
- this, create the file `apps/etheroscope_db/config/local.exs`. A template has
- been provided for your convenience (`apps/etheroscope_db/config/local.template.exs`).
-
-Second, you'll need to set up an Etherscan API key. To do this, create the file 
-`apps/etheroscope/config/local.exs`, similar to the database config above. 
-You can find a template in the same directory.
-
-You can then start the server with `mix phx.server`.
-
+Start the server with `mix phx.server`.
 
 ## Structure
 
