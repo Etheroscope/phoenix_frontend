@@ -1,5 +1,5 @@
 repo_url: https://github.com/Etheroscope/backend-phoenix.git
-app_name: backend-react
+app_name: backend-phoenix
 server_name: etheroscope.info
 nginx_servers: ["localhost:8080"]
 deploy_dir: "~/{{ app_name }}"
