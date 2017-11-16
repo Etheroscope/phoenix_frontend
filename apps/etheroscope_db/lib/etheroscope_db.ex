@@ -2,16 +2,6 @@ defmodule EtheroscopeDB do
   @moduledoc """
   Documentation for EtheroscopeDB.
   """
-
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> EtheroscopeDB.hello
-      :world
-
-  """
   def db_props do
     %{
       protocol: Application.get_env(:etheroscope_db, :protocol),
