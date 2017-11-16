@@ -6,6 +6,7 @@ defmodule Etheroscope do
   Contexts are also responsible for managing your data, regardless
   if it comes from the database, an external API or others.
   """
+  alias Etheroscope.Util
   alias EtheroscopeEth.Parity.{Contract, History}
 
   def fetch_contract_abi(address) do
@@ -18,6 +19,12 @@ defmodule Etheroscope do
     else
       abi ->
         {:ok, abi}
+    end
+  end
+
+  def fetch_contract_variables(address) do
+    case address |> fetch_contract_abi do
+      {:ok, abi} -> Util.Parity.abi_variables(abi)
     end
   end
 

@@ -6,13 +6,13 @@ defmodule EtheroscopeEth.Parity do
   use Etheroscope.Util, :parity
   import EtheroscopeEth.Client
 
-  defp handle_timeout(do: block) do
-    Error.handle_error "A timeout error occurred with the Parity client", do: block
-  end
+  @type keccak_var :: <<_ ::80>>
+
+  @method_id_size 10
 
   @spec trace_filter(map()) :: {:ok, String.t} | Error.t
   def trace_filter(params) do
-    with true          <- Parity.validate_filter_params(params),
+    with true          <- validate_filter_params(params),
          {:ok, result} <- request("trace_filter", [params], [])
     do
       IO.inspect result
@@ -25,11 +25,28 @@ defmodule EtheroscopeEth.Parity do
 
   @spec current_block_number() :: non_neg_integer()
   def current_block_number do
-    handle_timeout do
-      {:ok, hex} = eth_block_number()
-      Hex.from_hex(hex)
+    eth_block_number()
+      |> Hex.from_hex(hex)
+    case  do
+      {:ok, hex}     -> Hex.from_hex(hex)
+      {:error, msg}  -> {:error, %{"The following error occured with the Parity client: #{msg}"}
     end
   end
+
+  @spec keccak_value(string()) :: {:ok, string} | Error.t
+  def keccak_value(var) do
+    hash = Base.encode16(var)
+    case EtheroscopeEth.Client.web3_sha3("0x" <> hash) do
+      {:ok, hex} -> {:ok, String.slice(hex, 0, @method_id_size)}
+      other      -> other
+    end
+  end
+
+  @spec variable_value(keccak_var, string(), string()) :: {:ok, string()} | Error.t
+  def variable_value(variable, address, block_number) do
+    EtheroscopeEth.Client.eth_call(%{ "to" => address, "data" => variable}, block_number)
+  end
+
 end
 
 defmodule EtheroscopeEth.TimeoutError do

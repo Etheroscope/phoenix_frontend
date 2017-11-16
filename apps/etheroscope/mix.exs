@@ -37,7 +37,8 @@ defmodule Etheroscope.Mixfile do
   defp deps do
     [
       {:httpoison, "~> 0.11.1"},
-      {:poison, "~> 3.1"}
+      {:poison, "~> 3.1"},
+      {:keccakf1600, "~> 2.0.0"}
     ]
   end
 

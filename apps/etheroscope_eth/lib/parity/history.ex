@@ -5,21 +5,22 @@ defmodule EtheroscopeEth.Parity.History do
   """
   use Etheroscope.Util, :parity
   alias EtheroscopeEth.Parity
+  alias EtheroscopeEth.Parity.Block
 
   @behaviour EtheroscopeEth.Parity.Resource
 
-  def fetch(address, variable) do
+  def fetch({address, variable}) do
 
-    Logger.info "Starting from block #{start_block()}"
+    Logger.info "Starting from block #{Block.start_block()}"
 
-    contract = Etheroscope.fetch_contract_abi(address)
-    transactions = Parity.trace_filter(filter_params(address))
-
-    require IEx
-    IEx.pry()
-
-    block_numbers(transactions)
-
+    with contract   = Etheroscope.fetch_contract_abi(address),
+         {:ok, ts}  <- address |> filter_params |> Parity.trace_filter
+         # block_nums = block_numbers(ts)
+    do
+      ts
+      # File.write('data/doa_response.txt', Poison.encode!(ts), [:binary])
+      # Block.process_blocks(block_nums)
+    end
 
     # console.time('Contract retrieval');
     # const abiJSON = await (contractABICache.get(address));
@@ -53,17 +54,16 @@ defmodule EtheroscopeEth.Parity.History do
     # console.timeEnd('Whole history');
     # return history;
   end
+  def fetch(_), do: {:error, :badarg}
 
   def fetch_variable_state(address, variable, block_number) do
-
+    variable
+      |> Parity.keccak_value
+      |> Parity.variable_value(address, block_number)
   end
 
   def filter_params(address) do
-      %{ "toAddress" => [address], "fromBlock" => start_block() }
-  end
-
-  defp start_block do
-    Hex.to_hex(Parity.current_block_number - 75_000)
+      %{ "toAddress" => [address], "fromBlock" => Block.start_block() }
   end
 
 end
