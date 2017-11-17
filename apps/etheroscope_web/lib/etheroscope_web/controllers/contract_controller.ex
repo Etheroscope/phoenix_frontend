@@ -3,7 +3,7 @@ defmodule EtheroscopeWeb.ContractController do
 
   def contract(conn, %{"contract_address" => contract_address}) do
     case Etheroscope.fetch_contract_abi(contract_address) do
-      {:ok, contract} -> json conn, contract
+      {:ok, contract} -> json conn, %{abi: contract}
       {:error, err} ->
         Etheroscope.Util.Error.put_error_message(err)
         put_status(conn, :internal_server_error)

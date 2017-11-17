@@ -11,10 +11,6 @@ defmodule Etheroscope do
 
   def fetch_contract_abi(address) do
     fetch(&Contract.fetch_contract_abi/1, address)
-    case Contract.fetch_contract_abi(address) do
-      {:ok, abi} -> abi
-      errors     -> Error.put_error_message(errors)
-    end
   end
 
   def fetch_contract_block_numbers(address) do
@@ -27,8 +23,8 @@ defmodule Etheroscope do
 
   defp fetch(function, address) do
     case function.(address) do
-      {:ok, resp}             -> resp
       errors = {:error, _err} -> Error.put_error_message(errors)
+      resp   = {:ok, _val}    -> resp
     end
   end
 
