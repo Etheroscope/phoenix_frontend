@@ -4,5 +4,3 @@ config :ethereumex,
   scheme: "http",
   host: "parity.etheroscope.info",
   port: 8545
-
-import_config "prod.secret.exs"
