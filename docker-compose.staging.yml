@@ -3,10 +3,10 @@ services:
   db:
     image: postgres:9.6.2
     ports:
-      - "5432:5432"
+      - "6969:5432"
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
     volumes_from:
       - dbdata
 
@@ -26,5 +26,7 @@ services:
       - PORT=80
     volumes:
       - .:/app
+    links:
+      - "db:db"
     ports:
       - "6969:80"
