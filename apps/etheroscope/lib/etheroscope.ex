@@ -7,7 +7,7 @@ defmodule Etheroscope do
   if it comes from the database, an external API or others.
   """
   use Etheroscope.Util
-  alias EtheroscopeEcto.Parity.{Contract, VariableState}
+  alias EtheroscopeEcto.Parity.{Contract, VariableState, Block}
 
   def fetch_contract_abi(address) do
     fetch(&Contract.fetch_contract_abi/1, address)
@@ -31,15 +31,20 @@ defmodule Etheroscope do
   def fetch_variable_history(address, variable) do
     with {:ok, blocks} <- Contract.fetch_contract_block_numbers(address)
     do
-      for block <- blocks do
-        Logger.info "Fetching #{variable} for contract #{address} on block #{block}"
-        case VariableState.fetch_variable_state(address, variable, block) do
-          {:ok, var} ->
-            Logger.info "Fetched #{variable} for contract #{address} on block #{block}"
-            var
-          {:error, errors} -> Error.put_error_message(errors)
-        end
-      end
+      {:ok, process_blocks(blocks, [], address, variable)}
+    end
+  end
+
+  defp process_blocks([], accum, _address, _variable), do: accum
+  defp process_blocks([block | blocks], accum, address, variable) do
+    with {:ok, var}  <- VariableState.fetch_variable_state(address, variable, block),
+         {:ok, time} <- Block.fetch_block_time(block)
+    do
+      process_blocks(blocks, [%{value: var.value, time: time} | accum], address, variable)
+    else
+      {:error, errors} ->
+        Error.put_error_message(errors)
+        process_blocks(blocks, accum, address, variable)
     end
   end
 

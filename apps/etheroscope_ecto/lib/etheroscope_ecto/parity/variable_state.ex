@@ -8,7 +8,7 @@ defmodule EtheroscopeEcto.Parity.VariableState do
   schema "variable_states" do
     field :variable, :string
     field :block_number, :integer
-    field :value, :integer
+    field :value, :string
 
     belongs_to :contract, Contract
 
@@ -37,12 +37,12 @@ defmodule EtheroscopeEcto.Parity.VariableState do
          {:ok, value}    <- EtheroscopeEth.Parity.VariableState.fetch_value(address, variable, block_number)
     do
       contract
-      |> Ecto.build_assoc(:variable_states, %{ value: value, block_number: block_number, variable: variable })
+      |> Ecto.build_assoc(:variable_states, %{ value: Integer.to_string(value), block_number: block_number, variable: variable })
       |> Repo.insert
     else
       {:error, errs = [_e | _es]} -> Error.build_error(errs, "[DB] Fetch variable state for #{variable} failed.")
       {:error, chgset}            -> Error.build_error(chgset.errors, "[DB] Fetch variable state for #{variable} failed.")
-      res = {:ok, _v}  -> res
+      var                         -> {:ok, var}
     end
   end
 

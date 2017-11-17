@@ -4,7 +4,7 @@ defmodule Etheroscope.Repo.Migrations.CreateBlocks do
   def change do
     create table(:blocks) do
       add :number, :integer
-      add :time, :integer
+      add :time, :string
 
       timestamps()
     end

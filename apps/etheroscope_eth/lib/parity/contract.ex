@@ -43,18 +43,23 @@ defmodule EtheroscopeEth.Parity.Contract do
     fetch_blocks(address, block)
   end
 
-  defp fetch_blocks(address, block_num) when is_integer(block_num) do
-    fetch_blocks(address, Hex.to_hex block_num)
+  defp fetch_blocks(address, {:ok, block_num}) when is_integer(block_num) do
+    fetch_blocks(address, Hex.to_hex(block_num))
   end
   defp fetch_blocks(address, block_num) do
-    Logger.info "Fetching: block numbers for #{address}"
-    case address |> format_filter_params(block_num) |> Parity.trace_filter do
-      {:ok, ts} ->
-        Logger.info "Fetched: block numbers for #{address}"
-        {:ok, block_numbers(ts)}
+    Logger.info "[ETH] Fetching: block numbers for #{address}"
+    with {:ok, cur} <- Parity.current_block_number,
+         true       <- cur - Hex.from_hex(block_num) > 1_000,
+         {:ok, ts}  <- address |> format_filter_params(block_num) |> Parity.trace_filter
+    do
+      Logger.info "[ETH] Fetched: block numbers for #{address}"
+      {:ok, block_numbers(ts)}
+    else
+      false ->
+        Logger.info "[ETH] Not Fetched: too soon"
+        {:ok, MapSet.new}
       {:error, err} ->
-        Logger.error "Fetching block numbers #{address} failed with error #{err}"
-        Error.build_error(err, "Error fetching block numbers in EtheroscopeEth.Parity.Contract.fetch_block_numbers(#{address})")
+        Error.build_error(err, "[ETH] Not Fetched: blocks for #{address}.")
     end
   end
 

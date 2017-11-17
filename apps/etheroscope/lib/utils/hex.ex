@@ -9,7 +9,10 @@ defmodule Etheroscope.Util.Hex do
   def from_hex({:ok, "0x" <> hex}), do: {:ok, String.to_integer(hex, 16)}
   # propragate the error
   def from_hex({:error, msg}), do: {:error, msg}
-  def from_hex(_), do: raise Etheroscope.Util.BadArgError
+  def from_hex(x) do
+    IO.inspect(x)
+    raise Etheroscope.Util.BadArgError
+  end
 
   @spec to_hex(integer() | {atom(), integer()}) :: {atom(), any()} | binary()
   def to_hex(num) when is_integer(num), do: "0x#{Integer.to_string(num, 16)}"

@@ -57,13 +57,22 @@ defmodule EtheroscopeEcto.Parity.Contract do
 
   @spec fetch_contract_block_numbers(String.t()) :: {:ok, Ecto.Schema.t} | {:error, Ecto.Changeset.t}
   def fetch_contract_block_numbers(addr) do
-    with {:ok, contract}     <- fetch_contract(addr),
-         blocks               = contract.blocks,
-         {:ok, block_list}   <- update_block_numbers(contract.address, contract.most_recent_block),
-         {:ok, new_contract} <- update_contract(contract, %{blocks: blocks ++ block_list, most_recent_block: Enum.max(block_list)})
+    with {:ok, contract}             <- fetch_contract(addr),
+         blocks                      = contract.blocks
+    do
+      fetch_contract_block_numbers_h(contract, blocks)
+    else
+      {:error, err} -> Error.build_error(err, "[DB] Fetch contract block numbers failed.")
+    end
+  end
+
+  defp fetch_contract_block_numbers_h(contract, blocks) do
+    with {:ok, block_list = [_ | _]} <- update_block_numbers(contract.address, contract.most_recent_block),
+         {:ok, new_contract}         <- update_contract(contract, %{blocks: blocks ++ block_list, most_recent_block: Enum.max(block_list)})
     do
       {:ok, new_contract.blocks}
     else
+      {:ok, []}     -> {:ok, blocks}
       {:error, err} -> Error.build_error(err, "[DB] Fetch contract block numbers failed.")
     end
   end
