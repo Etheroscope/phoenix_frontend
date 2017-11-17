@@ -33,15 +33,15 @@ defmodule Etheroscope.Util.Error do
     end
   end
 
-  def put_error_message(err = {:error, errors}) do
+  def put_error_message(errors) do
     for err <- errors do
       msg  = Map.get(err, :msg, "An error occured.")
       type = Map.get(err, :msg, ":error")
-      Logger.error "Error: #{type}"
+      # Logger.error "#{type}"
       Logger.error "#{msg}"
       # Logger.error "Full error: #{map}"
     end
-    err
+    {:error, errors}
   end
 
 end

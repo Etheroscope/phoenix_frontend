@@ -43,7 +43,7 @@ defmodule EtheroscopeEth.Parity do
   end
   def variable_value({:error, error}, address, block_number) do
     # head of error list should be the variable
-    Error.build_error(error, "Couldn't fetch from contract (#{address}) at block #{block_number}")
+    Error.build_error(error, "[ETH] Fetch from contract #{address} at block #{block_number} failed")
   end
 
 end

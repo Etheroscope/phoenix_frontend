@@ -24,6 +24,7 @@ services:
       - "db:db"
     environment:
       - MIX_ENV
+      - ETHERSCAN_API_KEY
     volumes:
       - .:/app
     ports:

@@ -23,8 +23,8 @@ defmodule Etheroscope do
 
   defp fetch(function, address) do
     case function.(address) do
-      errors = {:error, _err} -> Error.put_error_message(errors)
-      resp   = {:ok, _val}    -> resp
+      {:error, errors}     -> Error.put_error_message(errors)
+      resp   = {:ok, _val} -> resp
     end
   end
 
@@ -33,8 +33,12 @@ defmodule Etheroscope do
     do
       for block <- blocks do
         Logger.info "Fetching #{variable} for contract #{address} on block #{block}"
-        VariableState.fetch_variable_state(address, variable, block)
-        Logger.info "Fetched #{variable} for contract #{address} on block #{block}"
+        case VariableState.fetch_variable_state(address, variable, block) do
+          {:ok, var} ->
+            Logger.info "Fetched #{variable} for contract #{address} on block #{block}"
+            var
+          {:error, errors} -> Error.put_error_message(errors)
+        end
       end
     end
   end

@@ -1,5 +1,6 @@
 defmodule EtheroscopeEcto.Parity.VariableState do
   use Ecto.Schema
+  use Etheroscope.Util
   import Ecto.Changeset
   alias EtheroscopeEcto.Repo
   alias EtheroscopeEcto.Parity.{Contract, VariableState}
@@ -39,7 +40,8 @@ defmodule EtheroscopeEcto.Parity.VariableState do
       |> Ecto.build_assoc(:variable_states, %{ value: value, block_number: block_number, variable: variable })
       |> Repo.insert
     else
-      {:error, chgset} -> Error.build_error(chgset.errors, "[DB] Fetch variable state for #{variable} failed.")
+      {:error, errs = [_e | _es]} -> Error.build_error(errs, "[DB] Fetch variable state for #{variable} failed.")
+      {:error, chgset}            -> Error.build_error(chgset.errors, "[DB] Fetch variable state for #{variable} failed.")
       res = {:ok, _v}  -> res
     end
   end
