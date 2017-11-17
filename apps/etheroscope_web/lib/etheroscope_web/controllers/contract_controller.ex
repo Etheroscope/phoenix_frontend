@@ -11,7 +11,14 @@ defmodule EtheroscopeWeb.ContractController do
     end
   end
 
-  def history(conn, %{"contract_address" => contract_address}) do
+  def history(conn, %{"contract_address" => contract_address, "variable" => variable}) do
+    case Etheroscope.fetch_variable_history(contract_address, variable) do
+      {:ok, val} -> json conn, %{data: val}
+      {:error, err} ->
+        Etheroscope.Util.Error.put_error_message(err)
+        put_status(conn, :internal_server_error)
+        json conn, %{:error => err}
+    end
     # case Etheroscope.fetch_history(contract_address) do
     #   {:ok, history} -> json conn, history
     #   {:error, msg} ->
