@@ -48,22 +48,18 @@ defmodule EtheroscopeEth.Parity.Contract do
   end
   defp fetch_blocks(address, block_num) do
     Logger.info "[ETH] Fetching: block numbers for #{address}"
-    with {:ok, cur} <- Parity.current_block_number,
-         # true       <- cur - Hex.from_hex(block_num) > 500,
-         {:ok, ts}  <- address |> format_filter_params(block_num) |> Parity.trace_filter
+    with {:ok, _cur} <- Parity.current_block_number,
+         {:ok, ts}   <- address |> format_filter_params(block_num) |> Parity.trace_filter
     do
       Logger.info "[ETH] Fetched: block numbers for #{address}"
       {:ok, block_numbers(ts)}
     else
-      false ->
-        Logger.info "[ETH] Not Fetched: too soon"
-        {:ok, MapSet.new}
       {:error, err} ->
         Error.build_error(err, "[ETH] Not Fetched: blocks for #{address}.")
     end
   end
 
   defp format_filter_params(address, block_num) do
-      %{ "toAddress" => [address], "fromBlock" => block_num }
+    %{ "toAddress" => [address], "fromBlock" => block_num }
   end
 end

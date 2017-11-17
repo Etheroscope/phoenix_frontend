@@ -6,11 +6,15 @@ defmodule EtheroscopeEth.Parity.Block do
   use Etheroscope.Util, :parity
   alias EtheroscopeEth.Parity
 
-  def start_block do
+  def start_block_number do
     case Parity.current_block_number do
-      {:ok, num} -> Hex.to_hex(num - 15_000)
+      {:ok, num} -> num - 15_000
       unknown    -> unknown
     end
+  end
+
+  def start_block_hex do
+    Hex.to_hex start_block_number
   end
 
   def fetch_time(block_number) when is_integer(block_number) do
