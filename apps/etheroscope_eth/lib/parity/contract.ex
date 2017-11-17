@@ -28,7 +28,7 @@ defmodule EtheroscopeEth.Parity.Contract do
       else
         body = %{"message" => "NOTOK"} ->
           Logger.error "Fetching contract #{contract_address} failed."
-          {:error, %{msg: "Error with Etherscan", body: body}}
+          {:error, %{msg: "[ETH] Etherscan Error"}}
       end
     end
   end

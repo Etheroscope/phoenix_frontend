@@ -6,17 +6,11 @@ defmodule EtheroscopeEth.Parity.Block do
   use Etheroscope.Util, :parity
   alias EtheroscopeEth.Parity
 
-  @behaviour EtheroscopeEth.Parity.Resource
-
   def start_block do
     case Parity.current_block_number do
       {:ok, num} -> Hex.to_hex(num - 5_000)
       unknown     -> unknown
     end
-  end
-
-  def fetch(_x) do
-    nil
   end
 
   # def process_blocks(x), do: IO.inspect x
