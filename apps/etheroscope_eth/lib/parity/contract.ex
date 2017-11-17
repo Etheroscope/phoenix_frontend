@@ -49,7 +49,7 @@ defmodule EtheroscopeEth.Parity.Contract do
   defp fetch_blocks(address, block_num) do
     Logger.info "[ETH] Fetching: block numbers for #{address}"
     with {:ok, cur} <- Parity.current_block_number,
-         true       <- cur - Hex.from_hex(block_num) > 1_000,
+         # true       <- cur - Hex.from_hex(block_num) > 500,
          {:ok, ts}  <- address |> format_filter_params(block_num) |> Parity.trace_filter
     do
       Logger.info "[ETH] Fetched: block numbers for #{address}"
