@@ -24,11 +24,6 @@ defmodule EtheroscopeEth.Parity do
     end
   end
 
-  @spec current_block_number() :: non_neg_integer()
-  def current_block_number do
-    Hex.from_hex(eth_block_number())
-  end
-
   @spec keccak_value(String.t()) :: {:ok, String.t()} | Error.t
   def keccak_value(var) do
     # create hash for variable name with empty parenthises

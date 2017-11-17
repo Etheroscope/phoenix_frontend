@@ -1,6 +1,5 @@
 defmodule EtheroscopeEth.Parity.Contract do
   use Etheroscope.Util, :parity
-  alias EtheroscopeEth.Parity
   alias EtheroscopeEth.Parity.Block
 
   @behaviour EtheroscopeEth.Parity.Resource
@@ -26,7 +25,7 @@ defmodule EtheroscopeEth.Parity.Contract do
         Logger.info "Fetched: contract #{contract_address}"
         {:ok, %{address: contract_address, abi: abi}}
       else
-        body = %{"message" => "NOTOK"} ->
+        %{"message" => "NOTOK"} ->
           Logger.error "Fetching contract #{contract_address} failed."
           {:error, %{msg: "[ETH] Etherscan Error"}}
       end
@@ -35,31 +34,11 @@ defmodule EtheroscopeEth.Parity.Contract do
 
   @spec fetch_early_blocks(binary()) :: {:ok, MapSet.t()} | Error.t
   def fetch_early_blocks(address) do
-    fetch_blocks(address, Block.start_block)
+    Block.fetch_full_history(address)
   end
 
   @spec fetch_latest_blocks(binary(), integer()) :: {:ok, MapSet.t()} | Error.t
-  def fetch_latest_blocks(address, block) do
-    fetch_blocks(address, block)
-  end
-
-  defp fetch_blocks(address, {:ok, block_num}) when is_integer(block_num) do
-    fetch_blocks(address, Hex.to_hex(block_num))
-  end
-  defp fetch_blocks(address, block_num) do
-    Logger.info "[ETH] Fetching: block numbers for #{address}"
-    with {:ok, _cur} <- Parity.current_block_number,
-         {:ok, ts}   <- address |> format_filter_params(block_num) |> Parity.trace_filter
-    do
-      Logger.info "[ETH] Fetched: block numbers for #{address}"
-      {:ok, block_numbers(ts)}
-    else
-      {:error, err} ->
-        Error.build_error(err, "[ETH] Not Fetched: blocks for #{address}.")
-    end
-  end
-
-  defp format_filter_params(address, block_num) do
-    %{ "toAddress" => [address], "fromBlock" => block_num }
+  def fetch_latest_blocks(address, latest_block) do
+    Block.fetch({address, latest_block})
   end
 end
