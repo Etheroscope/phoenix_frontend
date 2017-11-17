@@ -22,7 +22,7 @@ defmodule Etheroscope.Util.Cache do
 
   def fetch_global_var(key) do
     handle_missing_table do
-      :ets.lookup(:global_lookup, key)
+      :ets.lookup(:global_lookup, key)[key]
     end
   end
 end

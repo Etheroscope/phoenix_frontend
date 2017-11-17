@@ -6,12 +6,12 @@ defmodule EtheroscopeEth.Parity.Block do
   use Etheroscope.Util, :parity
   alias EtheroscopeEth.Parity
 
-  @batch_size 1_000
+  @batch_size 500
 
   @behaviour EtheroscopeEth.Parity.Resource
 
   def start_block_number do
-    blocks_ago(100_000)
+    blocks_ago(50_000)
   end
 
   def start_block_hex do
@@ -20,9 +20,7 @@ defmodule EtheroscopeEth.Parity.Block do
 
   def blocks_ago(number) do
     case current_block_number() do
-      {:ok, num} ->
-        Cache.add_or_update_global_var(:current_block, num - number)
-        num - number
+      {:ok, num}    -> num - number
       {:error, err} -> Error.build_error(err, "[ETH] Fetch failed: current_block_number")
     end
   end
@@ -39,9 +37,16 @@ defmodule EtheroscopeEth.Parity.Block do
     end
   end
 
-  @spec current_block_number() :: non_neg_integer()
+  @spec current_block_number() :: {:ok, non_neg_integer()} | Error.t()
   def current_block_number do
-    Hex.from_hex(EtheroscopeEth.Client.eth_block_number())
+    case EtheroscopeEth.Client.eth_block_number() do
+      {:ok, block} ->
+        block_number = Hex.from_hex(block)
+        Cache.add_or_update_global_var(:current_block, block_number)
+        {:ok, block_number}
+      {:error, err} ->
+        Error.build_error(err, "[ETH] Not Fetched: Current Block")
+    end
   end
 
   @spec current_block_number_ch() :: non_neg_integer()
@@ -49,24 +54,24 @@ defmodule EtheroscopeEth.Parity.Block do
     Cache.fetch_global_var(:current_block)
   end
 
-  @spec fetch({String.t(), {atom(), integer()}}) :: {:ok, MapSet.t()} | Error.t()
+  @spec fetch({String.t(), {atom(), integer()}}) :: {:ok, list()} | Error.t()
   def fetch({address, {:ok, block_num}}), do: fetch_batch(address, block_num, [])
   def fetch({_a, {:error, err}}),         do: Error.build_error(err, "[ETH] Not Fetched: Error passed in")
 
-  @spec fetch_full_history(String.t()) :: {:ok, MapSet.t()} | Error.t()
+  @spec fetch_full_history(String.t()) :: {:ok, list()} | Error.t()
   def fetch_full_history(address), do: fetch_batch(address, start_block_number(), [])
 
-  @spec fetch_batch(String.t(), integer(), list()) :: {:ok, MapSet.t()} | Error.t()
+  @spec fetch_batch(String.t(), integer(), list()) :: {:ok, list()} | Error.t()
   def fetch_batch(address, block_num, list) do
     if block_num >= current_block_number_ch() do
       Logger.info "[ETH] Fetched: block numbers for #{address}"
-      list
+      {:ok, list}
     else
       Logger.info "[ETH] Fetching: blocks #{block_num} to #{block_num + @batch_size} for #{address}"
       case address |> batched_filter_params(block_num) |> Parity.trace_filter do
         {:ok, ts} ->
           Logger.info "[ETH] Fetched: blocks #{block_num} to #{block_num + @batch_size} for #{address}"
-          fetch_batch(address, block_num + @batch_size, [ts | list])
+          fetch_batch(address, block_num + @batch_size, ts ++ list)
         {:error, _err} ->
           Logger.error "[ETH] Not Fetched: blocks #{block_num} to #{block_num + @batch_size} for #{address}"
           fetch_batch(address, block_num + @batch_size, list)
