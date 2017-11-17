@@ -20,7 +20,7 @@ defmodule EtheroscopeEth.Client do
   @spec post_request(binary()) :: {:ok | :error, any()}
   defp post_request(payload) do
     response = rpc_url() |> HTTPoison.post(payload, [{"Content-Type", "application/json"}], recv_timeout: 1_000_000)
-
+    
     case response do
       {:ok, %HTTPoison.Response{body: body, status_code: code}} ->
         body |> decode_body(code)

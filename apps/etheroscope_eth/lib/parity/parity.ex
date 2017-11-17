@@ -12,6 +12,7 @@ defmodule EtheroscopeEth.Parity do
 
   @spec trace_filter(map()) :: {:ok, String.t} | Error.t
   def trace_filter(params) do
+    Logger.info "[ETH] Starting Trace Filter"
     with true          <- validate_filter_params(params),
          {:ok, result} <- request("trace_filter", [params], [])
     do

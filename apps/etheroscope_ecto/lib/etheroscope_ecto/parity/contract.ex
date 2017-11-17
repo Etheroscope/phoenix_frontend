@@ -85,9 +85,10 @@ defmodule EtheroscopeEcto.Parity.Contract do
 
     case block_status do
       {:ok, block_set} -> {:ok, MapSet.to_list(block_set)}
-      {:error, _err}   ->
+      {:error, err}   ->
         # Don't propagate the error and instead return an empty list.
         Logger.warn "[DB] Block update failed."
+        IO.inspect err
         {:ok, []}
     end
   end
