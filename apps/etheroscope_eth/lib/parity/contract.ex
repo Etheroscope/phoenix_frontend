@@ -33,10 +33,22 @@ defmodule EtheroscopeEth.Parity.Contract do
     end
   end
 
-  @spec fetch_block_numbers(binary()) :: {:ok, MapSet.t()} | Error.t
-  def fetch_block_numbers(address) do
+  @spec fetch_early_blocks(binary()) :: {:ok, MapSet.t()} | Error.t
+  def fetch_early_blocks(address) do
+    fetch_blocks(address, Block.start_block)
+  end
+
+  @spec fetch_latest_blocks(binary(), integer()) :: {:ok, MapSet.t()} | Error.t
+  def fetch_latest_blocks(address, block) do
+    fetch_blocks(address, block)
+  end
+
+  defp fetch_blocks(address, block_num) when is_integer(block_num) do
+    fetch_blocks(address, Hex.to_hex block_num)
+  end
+  defp fetch_blocks(address, block_num) do
     Logger.info "Fetching: block numbers for #{address}"
-    case address |> format_filter_params |> Parity.trace_filter do
+    case address |> format_filter_params(block_num) |> Parity.trace_filter do
       {:ok, ts} ->
         Logger.info "Fetched: block numbers for #{address}"
         {:ok, block_numbers(ts)}
@@ -46,7 +58,7 @@ defmodule EtheroscopeEth.Parity.Contract do
     end
   end
 
-  defp format_filter_params(address) do
-      %{ "toAddress" => [address], "fromBlock" => Block.start_block() }
+  defp format_filter_params(address, block_num) do
+      %{ "toAddress" => [address], "fromBlock" => block_num }
   end
 end

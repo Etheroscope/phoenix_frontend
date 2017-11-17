@@ -7,6 +7,7 @@ defmodule EtheroscopeEcto.Repo.Migrations.CreateContracts do
       add :abi, {:array, :map}
       add :variables, {:array, :string}, default: []
       add :blocks, {:array, :integer}, default: []
+      add :most_recent_block, :integer, default: -1
 
       timestamps()
     end

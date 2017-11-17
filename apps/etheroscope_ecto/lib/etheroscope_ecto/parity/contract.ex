@@ -8,6 +8,7 @@ defmodule EtheroscopeEcto.Parity.Contract do
   schema "contracts" do
     field :address,   :string
     field :abi,       {:array, :map}
+    field :most_recent_block, :integer, default: -1
     field :variables, {:array, :string}, default: []
     field :blocks,    {:array, :integer}, default: []
 
@@ -57,16 +58,28 @@ defmodule EtheroscopeEcto.Parity.Contract do
   @spec fetch_contract_block_numbers(String.t()) :: {:ok, Ecto.Schema.t} | {:error, Ecto.Changeset.t}
   def fetch_contract_block_numbers(addr) do
     with {:ok, contract}     <- fetch_contract(addr),
-         []                  <- contract.blocks,
-         {:ok, block_set}    <- EtheroscopeEth.Parity.Contract.fetch_block_numbers(addr),
-         {:ok, new_contract} <- update_contract(contract, %{blocks: MapSet.to_list(block_set)})
+         blocks               = contract.blocks,
+         {:ok, block_list}   <- update_block_numbers(contract.address, contract.most_recent_block),
+         {:ok, new_contract} <- update_contract(contract, %{blocks: blocks ++ block_list, most_recent_block: Enum.max(block_list)})
     do
       {:ok, new_contract.blocks}
     else
-      {:error, err}     -> Error.build_error(err, "[DB] Fetch contract block numbers failed.")
-      blocks = [_b|_bs] ->
-        IO.inspect(blocks)
-        {:ok, blocks}
+      {:error, err} -> Error.build_error(err, "[DB] Fetch contract block numbers failed.")
+    end
+  end
+
+  defp update_block_numbers(address, most_recent_block) do
+    block_status = case most_recent_block do
+      -1 -> EtheroscopeEth.Parity.Contract.fetch_early_blocks(address)
+      x  -> EtheroscopeEth.Parity.Contract.fetch_latest_blocks(address, x)
+    end
+
+    case block_status do
+      {:ok, block_set} -> {:ok, MapSet.to_list(block_set)}
+      {:error, _err}   ->
+        # Don't propagate the error and instead return an empty list.
+        Logger.warn "[DB] Block update failed."
+        {:ok, []}
     end
   end
 
