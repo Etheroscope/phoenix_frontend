@@ -5,6 +5,7 @@ erl_crash.dump
 *.ez
 
 .*.swp
+*.secret.exs
 
 .ssh_keys
 .env

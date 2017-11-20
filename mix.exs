@@ -23,7 +23,10 @@ defmodule Etheroscope.Umbrella.Mixfile do
   # Dependencies listed here are available only for this project
   # and cannot be accessed from applications inside the apps folder
   defp deps do
-    [{:distillery, "~> 1.3"}]
+    [
+      {:distillery, "~> 1.3"},
+      {:dialyxir, "~> 0.5", only: [:dev], runtime: false}
+    ]
   end
 
   defp aliases do

@@ -988,7 +988,7 @@ var Socket = exports.Socket = function () {
         this.ref = newRef;
       }
 
-      return this.ref.toString();
+      return this.ref.toString.t();
     }
   }, {
     key: "sendHeartbeat",

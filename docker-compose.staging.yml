@@ -5,8 +5,8 @@ services:
     ports:
       - "6969:5432"
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
     volumes_from:
       - dbdata
 
@@ -20,12 +20,13 @@ services:
   web:
     image: etheroscope
     command: mix do deps.get, ecto.create, ecto.migrate, phx.server
-    links:
-      - "db:db"
     environment:
-      - MIX_ENV
+      - MIX_ENV=prod
       - ETHERSCAN_API_KEY
+      - PORT=80
     volumes:
       - .:/app
+    links:
+      - "db:db"
     ports:
-      - "4000:4000"
+      - "6969:80"

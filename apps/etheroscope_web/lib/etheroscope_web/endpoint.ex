@@ -38,6 +38,8 @@ defmodule EtheroscopeWeb.Endpoint do
     key: "_etheroscope_web_key",
     signing_salt: "qebFEx3L"
 
+  plug CORSPlug
+
   plug EtheroscopeWeb.Router
 
   @doc """
