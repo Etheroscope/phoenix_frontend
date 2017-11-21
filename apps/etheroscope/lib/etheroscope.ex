@@ -29,15 +29,25 @@ defmodule Etheroscope do
   end
 
   def fetch_variable_history(address, variable, callback_url) do
-    Task.Supervisor.start_child(Etheroscope.TaskSupervisor, fn () ->
-      with {:ok, blocks} <- Contract.fetch_contract_block_numbers(address),
-           {:ok, accum}  <- process_blocks(blocks, [], address, variable)
-      do
-        IO.inspect accum
-        post_history_result(callback_url, accum, address, variable)
-      end
-    end)
-    {:ok, nil}
+    # ping the callback to check validity
+    case HTTPoison.post(callback_url, "") do
+      {:ok, %HTTPoison.Response{status_code: 200}} ->
+        Task.Supervisor.start_child(Etheroscope.TaskSupervisor, fn () ->
+          with {:ok, blocks} <- Contract.fetch_contract_block_numbers(address),
+               {:ok, accum}  <- process_blocks(blocks, [], address, variable)
+          do
+            IO.inspect accum
+            post_history_result(callback_url, accum, address, variable)
+          end
+        end)
+        {:ok, nil}
+      {:error, %HTTPoison.Error{reason: :nxdomain}} ->
+        {:error, "Non existent domain passed in: #{callback_url}"}
+      {:error, %HTTPoison.Error{reason: reason}} ->
+        {:error, "Error from callback url: #{reason}"}
+      {:error, %HTTPoison.Response{body: body}} ->
+        {:error, "Unkown error from callback: #{body}"}
+    end
   end
 
   defp post_history_result(callback_url, blocks, _address, _variable) do
