@@ -15,7 +15,7 @@ defmodule EtheroscopeWeb.ContractController do
       {:ok, _respo} ->
         json conn, %{result: "Success"}
       {:error, err} ->
-        put_status(conn, :internal_server_error)
+        put_status(conn, 400)
         json conn, %{:error => err}
     end
   end
