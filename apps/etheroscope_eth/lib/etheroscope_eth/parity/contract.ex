@@ -34,12 +34,8 @@ defmodule EtheroscopeEth.Parity.Contract do
   end
 
   @spec fetch_early_blocks(binary()) :: {:ok, MapSet.t()} | Error.t
-  def fetch_early_blocks(address) do
-    Block.fetch_full_history(address)
-  end
+  def fetch_early_blocks(address), do: Block.fetch_full_history(address)
 
   @spec fetch_latest_blocks(binary(), integer()) :: {:ok, MapSet.t()} | Error.t
-  def fetch_latest_blocks(address, latest_block) do
-    Block.fetch({address, latest_block})
-  end
+  def fetch_latest_blocks(address, latest_block), do: Block.fetch({address, latest_block})
 end
