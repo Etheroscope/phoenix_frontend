@@ -56,13 +56,12 @@ defmodule Etheroscope.Util.Cache do
   end
 
   def start_history_task(pid, address, variable) do
-    add_history_task(address, variable, pid)
+    update_history_task(address, variable, pid)
     update_task_status(pid, "started", {})
   end
 
-  def finish_history_task(pid, address, variable) do
-    update_task_status(pid, "done", {})
-    update_history_task(address, variable, pid)
+  def finish_history_task(pid, data) do
+    update_task_status(pid, "done", data)
   end
 
   def update_task_status(pid, status, data) do
