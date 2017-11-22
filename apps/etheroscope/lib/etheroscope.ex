@@ -21,12 +21,26 @@ defmodule Etheroscope do
     fetch(&Contract.fetch_contract_variables/1, address)
   end
 
+  def fetch_task_status(pid) do
+    case Cache.fetch_task_status(pid) do
+      {"fetching", {blocks_done, blocks_total}}
+        -> %{status: "fetching", data: blocks_done/blocks_total}
+      {"done", data}
+        -> %{status: "done", data: data}
+      nil
+        -> nil
+      other
+        -> %{status: other}
+    end
+  end
+
   def fetch_variable_history(address, variable) do
     Task.Supervisor.start_child(Etheroscope.TaskSupervisor, fn () ->
-      Cache.start_task(self(), address, variable)
+      Cache.start_history_task(self(), address, variable)
       case Contract.fetch_contract_block_numbers(address) do
         {:ok, blocks} ->
-          Parity.process_blocks(blocks, [], address, variable)
+          data = process_blocks(blocks, [], address, variable)
+          Cache.update_task_status(self(), "done", data)
         {:error, err} -> #TODO: implement
           err
       end

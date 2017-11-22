@@ -74,7 +74,9 @@ defmodule EtheroscopeEcto.Parity.Contract do
     do
       {:ok, new_contract.blocks}
     else
-      {:ok, []}     -> {:ok, blocks}
+      {:ok, []} ->
+        Cache.update_task_status(self(), "loading", {})
+        {:ok, blocks}
       {:error, err, block_list} ->
         # block update interrupted
         update_contract(contract, %{blocks: blocks ++ block_list, most_recent_block: Enum.max(block_list)})

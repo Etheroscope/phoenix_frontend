@@ -3,7 +3,7 @@ defmodule Etheroscope.Util.Parity do
     EtheroscopeEth.Util.Parity is used to support all other Parity handling modules.
   """
   alias EtheroscopeEcto.Parity.{Block, VariableState}
-  alias Etheroscope.Util.{Cache, Hex}
+  alias Etheroscope.Util.{Error, Hex}
 
   @valid_filter_params ["fromBlock", "toBlock", "fromAddress", "toAddress"]
   @allowed_types ["uint", "uint8", "uint16", "uint32", "uint64", "uint128", "uint256", "int", "int8", "int16", "int32", "int64", "int128", "int256"]
@@ -41,7 +41,6 @@ defmodule Etheroscope.Util.Parity do
   defp is_valid_param(_),  do: false
 
   def process_blocks([], accum, _address, _variable) do
-    Cache.update_task_status(self(), "done", accum)
     {:ok, accum}
   end
   def process_blocks([block | blocks], accum, address, variable) do

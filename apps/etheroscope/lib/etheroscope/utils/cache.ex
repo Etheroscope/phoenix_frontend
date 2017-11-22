@@ -37,24 +37,24 @@ defmodule Etheroscope.Util.Cache do
     fetch_from_table(:global_lookup, key)
   end
 
-  def add_history_task(pid, address, variable) do
-    add_to_table(:history_tasks, pid, {address, variable})
+  def add_history_task(address, variable, pid) do
+    add_to_table(:history_tasks, {address, variable}, pid)
   end
 
-  def fetch_history_task_params(pid) do
-    fetch_from_table(:history_tasks, pid)
+  def fetch_history_task(address, variable) do
+    fetch_from_table(:history_tasks, {address, variable})
   end
 
   def start_history_task(pid, address, variable) do
     update_task_status(pid, "started", {})
-    add_history_task(pid, address, variable)
+    add_history_task(address, variable, pid)
   end
 
   def update_task_status(pid, status, data) do
-    add_to_table(:tasks_statuses, pid, {status, data})
+    add_to_table(:history_status, pid, {status, data})
   end
 
   def fetch_task_status(pid) do
-    fetch_from_table(:task_statuses, pid)
+    fetch_from_table(:history_status, pid)
   end
 end
