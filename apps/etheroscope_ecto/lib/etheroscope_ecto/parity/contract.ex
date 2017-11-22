@@ -52,7 +52,7 @@ defmodule EtheroscopeEcto.Parity.Contract do
     do
       create_contract(attrs)
     else
-      {:error, err} -> Error.build_error(err, "[DB] Not Fetched: Contract #{addr}.")
+      {:error, err} -> Error.build_error_db(err, "Not Fetched: Contract #{addr}.")
       contract      -> {:ok, contract}
     end
   end
@@ -64,7 +64,7 @@ defmodule EtheroscopeEcto.Parity.Contract do
     do
       fetch_contract_block_numbers_h(contract, blocks)
     else
-      {:error, err} -> Error.build_error(err, "[DB] Not Fetched: Contract Block Numbers.")
+      {:error, err} -> Error.build_error_db(err, "Not Fetched: Contract Block Numbers.")
     end
   end
 
@@ -78,9 +78,9 @@ defmodule EtheroscopeEcto.Parity.Contract do
       {:error, err, block_list} ->
         # block update interrupted
         update_contract(contract, %{blocks: blocks ++ block_list, most_recent_block: Enum.max(block_list)})
-        Error.build_error(err, "[DB] Not Fetch: Contract Block Numbers fetching interrupted.")
+        Error.build_error_db(err, "Not Fetch: Contract Block Numbers fetching interrupted.")
       {:error, err} ->
-        Error.build_error(err, "[DB] Not Updated: can't update contract in DB.")
+        Error.build_error_db(err, "Not Updated: can't update contract in DB.")
     end
   end
 
@@ -115,7 +115,7 @@ defmodule EtheroscopeEcto.Parity.Contract do
     do
       {:ok, new_contract.variables}
     else
-      {:error, err}   -> Error.build_error(err, "[DB] Not Fetched: contract variables for #{addr}.")
+      {:error, err}   -> Error.build_error_db(err, "Not Fetched: contract variables for #{addr}.")
       vars = [_v|_vs] -> {:ok, vars}
     end
   end

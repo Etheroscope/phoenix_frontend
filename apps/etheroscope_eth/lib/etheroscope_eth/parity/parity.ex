@@ -30,7 +30,7 @@ defmodule EtheroscopeEth.Parity do
     hash = Base.encode16(var <> "()")
     case EtheroscopeEth.Client.web3_sha3("0x" <> hash) do
       {:ok, hex}    -> {:ok, String.slice(hex, 0, @method_id_size)}
-      {:error, err} -> Error.build_error([], err, :bad_arg)
+      {:error, err} -> Error.build_error_eth(err, "Bad Argument")
     end
   end
 

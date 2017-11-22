@@ -16,7 +16,7 @@ defmodule EtheroscopeEth.Parity.Block do
   def blocks_ago(number) do
     case current_block_number() do
       {:ok, num}    -> num - number
-      {:error, err} -> Error.build_error(err, "[ETH] Fetch failed: current_block_number")
+      {:error, err} -> Error.build_error_eth(err, "Fetch failed: current_block_number")
     end
   end
 
@@ -30,7 +30,7 @@ defmodule EtheroscopeEth.Parity.Block do
     case EtheroscopeEth.Client.eth_get_block_by_number(block_number, false) do
       {:ok, %{"timestamp" => timestamp}} -> {:ok, timestamp}
       {:error, err} ->
-        Error.build_error(err, "[ETH] Not Fetched: Block time")
+        Error.build_error_eth(err, "Not Fetched: Block time")
     end
   end
 
@@ -42,7 +42,7 @@ defmodule EtheroscopeEth.Parity.Block do
         Cache.add_or_update_global_var(:current_block, block_number)
         {:ok, block_number}
       {:error, err} ->
-        Error.build_error(err, "[ETH] Not Fetched: Current Block")
+        Error.build_error_eth(err, "Not Fetched: Current Block")
     end
   end
 
@@ -53,7 +53,7 @@ defmodule EtheroscopeEth.Parity.Block do
 
   @spec fetch({String.t(), {atom(), integer()}}) :: {:ok, list()} | Error.t()
   def fetch({address, {:ok, block_num}}), do: fetch_batch(address, block_num, [])
-  def fetch({_a, {:error, err}}),         do: Error.build_error(err, "[ETH] Not Fetched: Error passed in")
+  def fetch({_a, {:error, err}}),         do: Error.build_error_eth(err, "Not Fetched: Error passed in")
 
   @spec fetch_full_history(String.t()) :: {:ok, list()} | Error.t()
   def fetch_full_history(address), do: fetch_batch(address, start_block_number(), [])

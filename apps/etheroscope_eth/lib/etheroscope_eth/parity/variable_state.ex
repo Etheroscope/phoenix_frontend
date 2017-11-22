@@ -31,7 +31,7 @@ defmodule EtheroscopeEth.Parity.VariableState do
         Logger.info "[ETH] Fetched #{variable_name} with value #{var} = #{Hex.from_hex(var)}"
         {:ok, Hex.from_hex(var)}
       {:error, err} ->
-        Error.build_error(err, "[ETH] Fetched failed #{variable_name}")
+        Error.build_error_eth(err, "Fetched failed #{variable_name}")
     end
 
 

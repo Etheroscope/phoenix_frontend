@@ -37,7 +37,6 @@ defmodule Etheroscope do
         post_history_result(callback_url, accum, address, variable)
       end
     end)
-    {:ok, nil}
   end
 
   defp post_history_result(callback_url, blocks, _address, _variable) do

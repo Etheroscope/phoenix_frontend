@@ -34,7 +34,7 @@ defmodule EtheroscopeEcto.Parity.Block do
     do
       {:ok, time}
     else
-      {:error, err} -> Error.build_error(err, "[DB] Unable to fetch block time.")
+      {:error, err} -> Error.build_error_db(err, "Unable to fetch block time.")
       block         -> {:ok, block.time}
     end
   end

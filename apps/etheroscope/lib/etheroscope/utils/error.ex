@@ -13,8 +13,11 @@ defmodule Etheroscope.Util.Error do
   @spec build_error(atom() | String.t() | map()) :: Error.t()
   def build_error(error) , do: build_error([], error)
 
-  @spec build_error(Error.t(), String.t(), atom()) :: Error.t()
-  def build_error(error, msg, type) , do: build_error_h(error, %{msg: msg, type: type})
+  def build_error_db(err, msg), do: build_error_namespaced(err, "DB", msg)
+  def build_error_eth(err, msg), do: build_error_namespaced(err, "ETH", msg)
+  def build_error_core(err, msg), do: build_error_namespaced(err, "CORE", msg)
+
+  defp build_error_namespaced(error, namespace, msg) , do: build_error_h(error, "[#{namespace}] " <> msg)
 
   def build_error(error, err_msg) when is_binary(err_msg), do: build_error_h(error, %{msg: err_msg})
   def build_error(error, err_type) when is_atom(err_type), do: build_error_h(error, %{type: err_type})
