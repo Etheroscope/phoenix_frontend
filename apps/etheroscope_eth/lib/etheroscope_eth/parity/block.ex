@@ -34,7 +34,7 @@ defmodule EtheroscopeEth.Parity.Block do
   end
 
   @spec current_block_number_ch() :: non_neg_integer()
-  def current_block_number_ch, do: Cache.fetch_global_var(:current_block)
+  def current_block_number_ch, do: Cache.lookup_global_var(:current_block)
 
   @spec current_block_number() :: {:ok, non_neg_integer()} | Error.t()
   def current_block_number do

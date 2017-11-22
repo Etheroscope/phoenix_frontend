@@ -11,10 +11,10 @@ defmodule EtheroscopeWeb.ContractController do
   end
 
   @doc """
-    Returns status of a task. PID should be of the format: "<#PID"
+    Returns status of a task.
   """
-  def status(conn, %{"pid" => pid}) do
-    case Etheroscope.fetch_task_status(pid) do
+  def status(conn, %{"contract_address" => contract_address, "variable" => variable}) do
+    case Etheroscope.fetch_task_status(contract_address, variable) do
       nil ->
         put_status(conn, 404)
         json conn, %{error: "Task not found", message: "Did you start the task?"}
