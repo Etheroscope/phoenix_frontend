@@ -38,6 +38,8 @@ defmodule EtheroscopeEcto.Parity.Contract do
     |> Repo.update()
   end
 
+  defp get_contract(addr), do: Repo.get_by(Contract, address: addr)
+
   @doc """
     fetch_contract(addr) attempts to get the entire contract schema from the database.
   If that fails, it calls the parity wrapper to retrieve the basic information needed to
@@ -50,19 +52,19 @@ defmodule EtheroscopeEcto.Parity.Contract do
     do
       create_contract(attrs)
     else
-      {:error, err} -> Error.build_error(err, "[DB] Fetch contract failed.")
+      {:error, err} -> Error.build_error(err, "[DB] Not Fetched: Contract #{addr}.")
       contract      -> {:ok, contract}
     end
   end
 
   @spec fetch_contract_block_numbers(String.t()) :: {:ok, Ecto.Schema.t} | {:error, Ecto.Changeset.t}
   def fetch_contract_block_numbers(addr) do
-    with {:ok, contract}             <- fetch_contract(addr),
-         blocks                      = contract.blocks
+    with {:ok, contract} <- fetch_contract(addr),
+         blocks           = contract.blocks
     do
       fetch_contract_block_numbers_h(contract, blocks)
     else
-      {:error, err} -> Error.build_error(err, "[DB] Fetch contract block numbers failed.")
+      {:error, err} -> Error.build_error(err, "[DB] Not Fetched: Contract Block Numbers.")
     end
   end
 
@@ -73,10 +75,16 @@ defmodule EtheroscopeEcto.Parity.Contract do
       {:ok, new_contract.blocks}
     else
       {:ok, []}     -> {:ok, blocks}
-      {:error, err} -> Error.build_error(err, "[DB] Fetch contract block numbers failed.")
+      {:error, err, block_list} ->
+        # block update interrupted
+        update_contract(contract, %{blocks: blocks ++ block_list, most_recent_block: Enum.max(block_list)})
+        Error.build_error(err, "[DB] Not Fetch: Contract Block Numbers fetching interrupted.")
+      {:error, err} ->
+        Error.build_error(err, "[DB] Not Updated: can't update contract in DB.")
     end
   end
 
+  @spec update_block_numbers(String.t(), integer()) :: {:ok, MapSet.t()} | Error.with_arg()
   defp update_block_numbers(address, most_recent_block) do
     block_status = case most_recent_block do
       -1 -> EtheroscopeEth.Parity.Contract.fetch_early_blocks(address)
@@ -86,18 +94,14 @@ defmodule EtheroscopeEcto.Parity.Contract do
     case block_status do
       {:ok, blocks} ->
         {:ok, MapSet.to_list(block_numbers(blocks))}
-      {:error, err}   ->
-        # Don't propagate the error and instead return an empty list.
-        Logger.warn "[DB] Block update failed."
-        IO.inspect err
-        {:ok, []}
+      err = {:error, _blocks, _error} -> err
     end
   end
 
   @spec fetch_contract_abi(String.t()) :: {:ok, Ecto.Schema.t} | {:error, Ecto.Changeset.t}
   def fetch_contract_abi(addr) do
     case fetch_contract(addr) do
-      {:error, chgset} -> Error.build_error(chgset.errors, "[DB] Fetch contractABI failed.")
+      {:error, chgset} -> Error.build_error(chgset.errors, "[DB] Not Fetched: contractABI for #{addr}.")
       {:ok, contract}  -> {:ok, contract.abi}
     end
   end
@@ -111,12 +115,9 @@ defmodule EtheroscopeEcto.Parity.Contract do
     do
       {:ok, new_contract.variables}
     else
-      {:error, err}   -> Error.build_error(err, "[DB] Fetch contract variables failed.")
+      {:error, err}   -> Error.build_error(err, "[DB] Not Fetched: contract variables for #{addr}.")
       vars = [_v|_vs] -> {:ok, vars}
     end
   end
 
-  defp get_contract(addr) do
-    Repo.get_by(Contract, address: addr)
-  end
 end

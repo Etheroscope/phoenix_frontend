@@ -10,13 +10,8 @@ defmodule EtheroscopeEth.Parity.Block do
 
   @behaviour EtheroscopeEth.Parity.Resource
 
-  def start_block_number do
-    blocks_ago(50_000)
-  end
-
-  def start_block_hex do
-    Hex.to_hex start_block_number()
-  end
+  def start_block_number, do: blocks_ago(100_000)
+  def start_block_hex, do: Hex.to_hex start_block_number()
 
   def blocks_ago(number) do
     case current_block_number() do
@@ -26,14 +21,16 @@ defmodule EtheroscopeEth.Parity.Block do
   end
 
   def fetch_time(block_number) when is_integer(block_number) do
-    fetch_time(Hex.to_hex(block_number))
+    block_number
+    |> Hex.to_hex
+    |> fetch_time
   end
   def fetch_time(block_number) when is_binary(block_number) do
     Logger.info "[ETH] Fetching: block #{block_number}"
     case EtheroscopeEth.Client.eth_get_block_by_number(block_number, false) do
       {:ok, %{"timestamp" => timestamp}} -> {:ok, timestamp}
       {:error, err} ->
-        Error.build_error(err, "[ETH] Unable to fetch block time")
+        Error.build_error(err, "[ETH] Not Fetched: Block time")
     end
   end
 
@@ -61,10 +58,10 @@ defmodule EtheroscopeEth.Parity.Block do
   @spec fetch_full_history(String.t()) :: {:ok, list()} | Error.t()
   def fetch_full_history(address), do: fetch_batch(address, start_block_number(), [])
 
-  @spec fetch_batch(String.t(), integer(), list()) :: {:ok, list()} | Error.t()
+  @spec fetch_batch(String.t(), integer(), list()) :: {:ok, list()} | Error.with_arg()
   def fetch_batch(address, block_num, list) do
     if block_num >= current_block_number_ch() do
-      Logger.info "[ETH] Fetched: block numbers for #{address}"
+      Logger.info "[ETH] Fetched: block numbers for #{address} up to date."
       {:ok, list}
     else
       Logger.info "[ETH] Fetching: blocks #{block_num} to #{block_num + @batch_size} for #{address}"
@@ -73,8 +70,8 @@ defmodule EtheroscopeEth.Parity.Block do
           Logger.info "[ETH] Fetched: blocks #{block_num} to #{block_num + @batch_size} for #{address}"
           fetch_batch(address, block_num + @batch_size, ts ++ list)
         {:error, _err} ->
-          Logger.error "[ETH] Not Fetched: blocks #{block_num} to #{block_num + @batch_size} for #{address}"
-          fetch_batch(address, block_num + @batch_size, list)
+          # return on error
+          {:error, "[ETH] Not Fetched: blocks #{block_num} to #{block_num + @batch_size} for #{address}", list}
       end
     end
   end

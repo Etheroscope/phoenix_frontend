@@ -3,6 +3,7 @@ defmodule Etheroscope.Util.Parity do
     EtheroscopeEth.Util.Parity is used to support all other Parity handling modules.
   """
 
+  @batch_size 500
   @valid_filter_params ["fromBlock", "toBlock", "fromAddress", "toAddress"]
   @allowed_types ["uint", "uint8", "uint16", "uint32", "uint64", "uint128", "uint256", "int", "int8", "int16", "int32", "int64", "int128", "int256"]
 

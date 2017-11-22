@@ -6,7 +6,9 @@ defmodule Etheroscope.Util.Error do
   """
   require Logger
 
-  @type t :: {:error, [%{atom() => String.t()}]}
+  @typep err_msg_list :: [%{atom() => String.t()}]
+  @type t :: {:error, err_msg_list()}
+  @type with_arg :: {:error, err_msg_list(), any()}
 
   @spec build_error(atom() | String.t() | map()) :: Error.t()
   def build_error(error) , do: build_error([], error)
