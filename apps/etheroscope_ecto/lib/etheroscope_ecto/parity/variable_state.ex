@@ -2,6 +2,10 @@ defmodule EtheroscopeEcto.Parity.VariableState do
   use Ecto.Schema
   use Etheroscope.Util
   import Ecto.Changeset
+
+  @behaviour Etheroscope.Resource
+
+  require EtheroscopeEcto
   alias EtheroscopeEcto.Repo
   alias EtheroscopeEcto.Parity.{Contract, VariableState}
 
@@ -15,41 +19,50 @@ defmodule EtheroscopeEcto.Parity.VariableState do
     timestamps()
   end
 
-  @doc false
-  def changeset(%VariableState{} = variable_state, attrs) do
-    variable_state
-    |> cast(attrs, [:address, :variable, :block_number, :value])
-    |> validate_required([:address, :variable, :block_number, :value])
+  def next_storage_module, do: EtheroscopeEth.Parity.VariableState
+
+  @doc """
+    Wrapper for get.
+  """
+  def get_variable_state(address, variable, block_number) do
+    get([address: address, variable: variable, block_number: block_number])
   end
 
-  @spec create_variable_state(map()) :: {:ok, Ecto.Schema.t} | {:error, Ecto.Changeset.t}
-  def create_variable_state(attrs \\ %{}) do
-    %VariableState{}
-    |> changeset(attrs)
-    |> Repo.insert()
-  end
-
-
-  @spec fetch_variable_state(String.t(), String.t(), integer()) :: {:ok, Ecto.Schema.t} | {:error, Ecto.Changeset.t}
-  def fetch_variable_state(address, variable, block_number) do
-    with {:ok, contract} <- Contract.fetch_contract(address),
-         nil             <- get_variable_state(contract, variable, block_number),
-         {:ok, value}    <- EtheroscopeEth.Parity.VariableState.fetch_value(address, variable, block_number)
-    do
-      contract
-      |> Ecto.build_assoc(:variable_states, %{ value: Integer.to_string(value), block_number: block_number, variable: variable })
-      |> Repo.insert
-    else
-      {:error, errs = [_e | _es]} -> Error.build_error(errs, "[DB] Fetch variable state for #{variable} failed.")
-      {:error, chgset}            -> Error.build_error(chgset.errors, "[DB] Fetch variable state for #{variable} failed.")
-      var                         -> {:ok, var}
+  @doc """
+    Returns the variable state from the DB or runs the necessary operations to fetch
+  it from the blockchain.
+  """
+  def get(opts = [address: address, variable: variable, block_number: block_number]) do
+    case load_variable_state(address, variable, block_number) do
+      hit = {:ok, _val}      -> hit
+      {:error, chgset}       -> Error.build_error(chgset.errors, "[DB] Fetch variable state for #{variable} failed.")
+      {:not_found, contract} ->
+        value_s = apply(next_storage_module(), :get, opts)
+        store_variable_state(contract, variable, block_number, value_s)
     end
   end
 
-  defp get_variable_state(contract, variable, block_number) do
+  defp store_variable_state(_contract, variable, block_number, {:error, err}) do
+    Error.build_error_db(err, "[DB] Not Fetched: Variable State for #{variable} at #{block_number}.")
+  end
+  defp store_variable_state(contract, variable, block_number, {:ok, value}) do
     contract
-    |> Ecto.assoc(:variable_states)
-    |> Repo.get_by(variable: variable, block_number: block_number)
+    |> Ecto.build_assoc(:variable_states, %{ value: Integer.to_string(value), block_number: block_number, variable: variable })
+    |> Repo.insert
+  end
+
+  defp load_variable_state(address, variable, block_number) do
+    case Contract.get(address) do
+      {:ok, contract}       -> get_variable_state_from_contract(contract, variable, block_number)
+      resp = {:error, _err} -> resp
+    end
+  end
+
+  defp get_variable_state_from_contract(contract, variable, block_number) do
+    case contract |> Ecto.assoc(:variable_states) |> Repo.get_by(variable: variable, block_number: block_number) do
+      nil -> {:not_found, contract}
+      val -> {:ok, val}
+    end
   end
 
 end
