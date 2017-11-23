@@ -6,35 +6,22 @@ defmodule EtheroscopeEth.Parity.VariableState do
   use Etheroscope.Util, :parity
   alias EtheroscopeEth.Parity
 
-  @behaviour EtheroscopeEth.Parity.Resource
+  @behaviour Etheroscope.Resource
+
+  def next_storage_module, do: nil
 
   @doc """
-  fetch_value/3 is just a wrapper for fetch/1 to facilitate dev.
+    Returns the calculated integer value for the variable at the given block.
   """
-  @spec fetch_value(String.t(), String.t(), integer()) :: {:ok, any()} | Error.t()
-  def fetch_value(address, variable_name, block_number) do
-    fetch({address, variable_name, block_number})
-  end
-
-  @doc """
-  fetch() returns the calculated integer value for the variable at the given block.
-  """
-  @spec fetch({String.t(), String.t(), integer()}) :: {:ok, integer()} | Error.t()
-  def fetch({address, variable_name, block_number}) do
-    Logger.info "[ETH] Fetching #{variable_name} in #{address} at block #{block_number}"
-    resp = variable_name
-           |> Parity.keccak_value
-           |> Parity.variable_value(address, Hex.to_hex(block_number))
-
-    case resp do
+  def get([address: address, variable: variable, block_number: block_number]) do
+    Logger.info "[ETH] Fetching #{variable} in #{address} at block #{block_number}"
+    case variable |> Parity.keccak_value |> Parity.variable_value(address, Hex.to_hex(block_number)) do
       {:ok, var} ->
-        Logger.info "[ETH] Fetched #{variable_name} with value #{var} = #{Hex.from_hex(var)}"
+        Logger.info "[ETH] Fetched #{variable} with value #{var} = #{Hex.from_hex(var)}"
         {:ok, Hex.from_hex(var)}
       {:error, err} ->
-        Error.build_error_eth(err, "Fetched failed #{variable_name}")
+        Error.build_error_eth(err, "Fetch Failed: failed for #{variable} at block #{block_number}.")
     end
 
-
   end
-  def fetch(_), do: Error.build_error(:badarg)
 end
