@@ -1,13 +1,12 @@
 defmodule EtheroscopeEcto.Parity.VariableState do
   use Ecto.Schema
   use Etheroscope.Util
-  import Ecto.Changeset
 
   @behaviour Etheroscope.Resource
 
   require EtheroscopeEcto
   alias EtheroscopeEcto.Repo
-  alias EtheroscopeEcto.Parity.{Contract, VariableState}
+  alias EtheroscopeEcto.Parity.Contract
 
   schema "variable_states" do
     field :variable, :string
@@ -35,7 +34,8 @@ defmodule EtheroscopeEcto.Parity.VariableState do
   def get(opts = [address: address, variable: variable, block_number: block_number]) do
     case load_variable_state(address, variable, block_number) do
       hit = {:ok, _val}      -> hit
-      {:error, chgset}       -> Error.build_error(chgset.errors, "[DB] Fetch variable state for #{variable} failed.")
+      {:error, chgset}       ->
+        Error.build_error(chgset.errors, "[DB] Fetch Failed: Variable State for #{variable} at block #{block_number}.")
       {:not_found, contract} ->
         value_s = apply(next_storage_module(), :get, opts)
         store_variable_state(contract, variable, block_number, value_s)
@@ -43,7 +43,7 @@ defmodule EtheroscopeEcto.Parity.VariableState do
   end
 
   defp store_variable_state(_contract, variable, block_number, {:error, err}) do
-    Error.build_error_db(err, "[DB] Not Fetched: Variable State for #{variable} at #{block_number}.")
+    Error.build_error_db(err, "[DB] Fetch Failed: Variable State for #{variable} at block #{block_number}.")
   end
   defp store_variable_state(contract, variable, block_number, {:ok, value}) do
     contract

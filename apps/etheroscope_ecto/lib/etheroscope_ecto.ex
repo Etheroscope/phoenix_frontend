@@ -7,6 +7,6 @@ defmodule EtheroscopeEcto do
   if it comes from the database, an external API or others.
   """
 
-  @type status :: {:ok, Ecto.Schema.t} | {:error, Ecto.Changeset.t}
+  @type db_status :: {:ok, Ecto.Schema.t} | {:error, Ecto.Changeset.t}
 
 end
