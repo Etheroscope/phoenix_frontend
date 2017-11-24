@@ -75,7 +75,7 @@ defmodule EtheroscopeEcto.Parity.Contract do
       resp = {:ok, _b}  -> resp
       {:stale, ctr}     -> update_block_numbers(ctr)
       {:not_found, ctr} -> get_full_block_history(ctr)
-      {:error, err}     -> Error.build_error(err, "Not Loaded: unable to load blocks for #{addr}")
+      {:error, err}     -> Error.build_error_db(err, "Not Loaded: unable to load blocks for #{addr}")
     end
   end
 
@@ -118,8 +118,8 @@ defmodule EtheroscopeEcto.Parity.Contract do
   @spec get_contract_abi(String.t()) :: EtheroscopeEcto.db_status()
   def get_contract_abi(addr) do
     case get(addr) do
-      {:error, chgset} -> Error.build_error_db(chgset.errors, "Fetch Failed: contractABI for #{addr}.")
-      {:ok, contract}  -> {:ok, contract.abi}
+      {:ok, contract}       -> {:ok, contract.abi}
+      resp = {:error, _err} -> resp
     end
   end
 

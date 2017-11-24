@@ -15,8 +15,11 @@ defmodule Etheroscope.HistoryTask do
       {:ok, blocks} ->
         History.finish(self(), blocks)
         Logger.info "[CORE] Processed: contract #{address} for var #{variable}"
+      :not_found ->
+        History.not_found_error(self())
       {:error, err} ->
         #TODO: implement
+        History.set_fetch_error(self(), err)
         Error.put_error_message(err)
     end
   end
@@ -26,11 +29,6 @@ defmodule Etheroscope.HistoryTask do
   end
 
   def status(address, variable) do
-    case History.get(address: address, variable: variable) do
-      {status, data} ->
-        %{status: Atom.to_string(status), data: data}
-      nil ->
-        nil
-    end
+    History.get(address: address, variable: variable)
   end
 end

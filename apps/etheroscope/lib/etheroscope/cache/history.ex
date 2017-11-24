@@ -11,7 +11,7 @@ defmodule Etheroscope.Cache.History do
       {_pid, _av, "done", data, expiration}            -> Cache.check_freshness({data, expiration})
       {_pid, _av, "fetching", fetched, total_to_fetch} -> {:fetching, fetched/total_to_fetch}
       {_pid, _av, "fetched",  _, _}                    -> {:processing, nil}
-      {_pid, _av, "error",  err, _}                    -> {:error, err}
+      {_pid, _av, "error", err, _}                     -> {:error, err}
       {_pid, _av, "started",  _, _}                    -> {:started, nil}
       nil                                              -> nil
     end
@@ -40,5 +40,9 @@ defmodule Etheroscope.Cache.History do
 
   def set_fetch_error(pid, err) do
     Cache.update_element(:histories, pid, [{3, "error"}, {4, err}])
+  end
+
+  def not_found_error(pid) do
+    set_fetch_error(pid, :not_found)
   end
 end

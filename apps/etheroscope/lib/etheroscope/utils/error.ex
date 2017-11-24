@@ -26,6 +26,8 @@ defmodule Etheroscope.Util.Error do
   defp build_error_h(errs, new_err) when is_list(errs) do
     {:error, [new_err | errs]}
   end
+  # Propagate a not_found error all the way up
+  defp build_error_h(:not_found, _new_err), do: {:error, :not_found}
   defp build_error_h(err, new_err), do: {:error, [new_err, err]}
 
   defmacro handle_error(error_msg, do: block) do
@@ -38,6 +40,7 @@ defmodule Etheroscope.Util.Error do
     end
   end
 
+  def put_error_message(err) when is_atom(err), do: err
   def put_error_message(errors) do
     for err <- errors do
       msg = Map.get(err, :msg, "An error occured.")

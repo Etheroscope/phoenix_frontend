@@ -5,6 +5,10 @@ defmodule EtheroscopeWeb.ContractController do
     case Etheroscope.fetch_contract_abi(contract_address) do
       {:ok, contract} ->
         json conn, %{abi: contract}
+      :not_found ->
+        conn
+        |> put_status(404)
+        |> json(%{})
       {:error, err} ->
         put_status(conn, :internal_server_error)
         json conn, %{:error => err}
@@ -17,14 +21,25 @@ defmodule EtheroscopeWeb.ContractController do
   """
   def get_history(conn, %{"contract_address" => contract_address, "variable" => variable}) do
     case Etheroscope.fetch_history_status(contract_address, variable) do
-      nil ->
-        put_status(conn, 404)
-        json conn, %{error: "History not found", message: "Did you start the task?"}
+      {:ok, data} ->
+        conn
+        |> json(%{data: data})
+      {:error, :not_found} ->
+        conn
+        |> put_status(422)
+        |> json(%{:error => "Error with contract address or variable name."})
       {:error, err} ->
-        put_status(conn, :internal_server_error)
-        json conn, %{:error => err}
-      res ->
-        json conn, Map.put(res, :result, "Success")
+        conn
+        |> put_status(:internal_server_error)
+        |> json(%{:error => err})
+      nil ->
+        conn
+        |> put_status(404)
+        |> json(%{})
+      {status, data} ->
+        conn
+        |> put_status(503)
+        |> json(%{status: Atom.to_string(status), data: data})
     end
   end
 
@@ -36,11 +51,13 @@ defmodule EtheroscopeWeb.ContractController do
       {:ok, _pid} ->
         json conn, %{result: "Success"}
       {:found, _} ->
-        put_status(conn, 202)
-        json conn, %{result: "History status already cached."}
+        conn
+        |> put_status(405)
+        |> json(%{result: "Already exists."})
       {:error, err} ->
-        put_status(conn, :internal_server_error)
-        json conn, %{:error => err}
+        conn
+        |> put_status(:internal_server_error)
+        |> json(%{:error => err})
     end
   end
 end

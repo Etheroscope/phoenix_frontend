@@ -27,7 +27,7 @@ defmodule EtheroscopeEth.Parity.Contract do
         {:ok, abi}
       else
         %{"message" => "NOTOK"} ->
-          Error.build_error_eth([], "Fetch Failed: Etherscan Error.")
+          {:error, :not_found}
         {:error, %HTTPoison.Error{reason: :nxdomain}} ->
           Error.build_error_eth([], "No Domain: can't connect to #{url}")
       end
