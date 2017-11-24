@@ -1,8 +1,29 @@
 defmodule EtheroscopeEcto.History do
-  @behaviour Etheroscope.Resource
+  use Etheroscope.Util
 
   require EtheroscopeEcto
-  alias EtheroscopeEcto.Parity.{Contract, Block}
+  alias Etheroscope.Cache.Block
+  alias EtheroscopeEcto.Parity.{Contract, VariableState}
 
-  # @spec fetch_contract_block_numbers(String.t()) :: EtheroscopeEcto.db_status()
+  def get([address: address, variable: variable]) do
+    case Contract.get_block_numbers(address) do
+      {:ok, blocks}         ->
+        process_blocks(blocks, [], address, variable)
+      resp = {:error, _err} -> resp
+    end
+  end
+
+  defp process_blocks([], accum, _address, _variable), do: {:ok, accum}
+  defp process_blocks([block | blocks], accum, address, variable) do
+    with {:ok, var}  <- VariableState.get_variable_state(address, variable, block),
+         {:ok, time} <- Block.get_time(block)
+    do
+      Logger.info "[CORE] Processing: block #{time} var #{var.value}"
+      process_blocks(blocks, [%{value: var.value, time: time} | accum], address, variable)
+    else
+      {:error, errors} ->
+        Error.build_error_core(errors, "No process: failed to proccess block #{block}")
+    end
+  end
+
 end

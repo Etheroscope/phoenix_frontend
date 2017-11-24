@@ -13,7 +13,8 @@ defmodule Etheroscope.Application do
     import Supervisor.Spec, warn: false
 
     Supervisor.start_link([
-      {Task.Supervisor, name: Etheroscope.TaskSupervisor}
+      {Task.Supervisor, name: Etheroscope.TaskSupervisor},
+      Etheroscope.Cache.Server
     ], strategy: :one_for_one, name: Etheroscope.Supervisor)
   end
 end

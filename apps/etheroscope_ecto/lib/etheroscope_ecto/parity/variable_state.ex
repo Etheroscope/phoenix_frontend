@@ -32,12 +32,15 @@ defmodule EtheroscopeEcto.Parity.VariableState do
   it from the blockchain.
   """
   def get(opts = [address: address, variable: variable, block_number: block_number]) do
+    Logger.info "[DB] Fetching: Variable State for #{variable} at block #{block_number}."
     case load_variable_state(address, variable, block_number) do
-      hit = {:ok, _val}      -> hit
-      {:error, chgset}       ->
+      hit = {:ok, _val} ->
+        Logger.info "[DB] Fetched: Variable State for #{variable} at block #{block_number}."
+        hit
+      {:error, chgset} ->
         Error.build_error(chgset.errors, "[DB] Fetch Failed: Variable State for #{variable} at block #{block_number}.")
       {:not_found, contract} ->
-        value_s = apply(next_storage_module(), :get, opts)
+        value_s = apply(next_storage_module(), :get, [opts])
         store_variable_state(contract, variable, block_number, value_s)
     end
   end

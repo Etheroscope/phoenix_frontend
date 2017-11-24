@@ -3,7 +3,8 @@ defmodule EtheroscopeWeb.ContractController do
 
   def contract(conn, %{"contract_address" => contract_address}) do
     case Etheroscope.fetch_contract_abi(contract_address) do
-      {:ok, contract} -> json conn, %{abi: contract}
+      {:ok, contract} ->
+        json conn, %{abi: contract}
       {:error, err} ->
         put_status(conn, :internal_server_error)
         json conn, %{:error => err}
@@ -11,25 +12,32 @@ defmodule EtheroscopeWeb.ContractController do
   end
 
   @doc """
-    Returns status of a task.
+    Returns history status or result if done.
+    Returns 404 if no history task running.
   """
-  def status(conn, %{"contract_address" => contract_address, "variable" => variable}) do
-    case Etheroscope.fetch_task_status(contract_address, variable) do
+  def get_history(conn, %{"contract_address" => contract_address, "variable" => variable}) do
+    case Etheroscope.fetch_history_status(contract_address, variable) do
       nil ->
         put_status(conn, 404)
-        json conn, %{error: "Task not found", message: "Did you start the task?"}
+        json conn, %{error: "History not found", message: "Did you start the task?"}
+      {:error, err} ->
+        put_status(conn, :internal_server_error)
+        json conn, %{:error => err}
       res ->
         json conn, Map.put(res, :result, "Success")
     end
   end
 
   @doc """
-    Creates task to fetch variable history.
+    Creates variable history task if none has run.
   """
-  def history(conn, %{"contract_address" => contract_address, "variable" => variable}) do
-    case Etheroscope.fetch_variable_history(contract_address, variable) do
+  def post_history(conn, %{"contract_address" => contract_address, "variable" => variable}) do
+    case Etheroscope.run_history_task(contract_address, variable) do
       {:ok, _pid} ->
         json conn, %{result: "Success"}
+      {:found, _} ->
+        put_status(conn, 202)
+        json conn, %{result: "History status already cached."}
       {:error, err} ->
         put_status(conn, :internal_server_error)
         json conn, %{:error => err}

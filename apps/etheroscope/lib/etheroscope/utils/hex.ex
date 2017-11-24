@@ -10,7 +10,6 @@ defmodule Etheroscope.Util.Hex do
   # propragate the error
   def from_hex({:error, msg}), do: {:error, msg}
   def from_hex(x) do
-    IO.inspect(x)
     raise Etheroscope.Util.BadArgError
   end
 

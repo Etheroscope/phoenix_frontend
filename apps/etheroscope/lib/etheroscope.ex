@@ -10,22 +10,22 @@ defmodule Etheroscope do
   alias EtheroscopeEcto.Parity.Contract
 
   def fetch_contract_abi(address) do
-    fetch(&Contract.fetch_contract_abi/1, address)
+    fetch(&Contract.get_contract_abi/1, address)
   end
 
   def fetch_contract_block_numbers(address) do
-    fetch(&Contract.fetch_contract_block_numbers/1, address)
+    fetch(&Contract.get_block_numbers/1, address)
   end
 
   def fetch_contract_variables(address) do
-    fetch(&Contract.fetch_contract_variables/1, address)
+    fetch(&Contract.get_contract_variables/1, address)
   end
 
-  def fetch_task_status(address, variable) do
+  def fetch_history_status(address, variable) do
     Etheroscope.HistoryTask.status(address, variable)
   end
 
-  def fetch_variable_history(address, variable) do
+  def run_history_task(address, variable) do
     Etheroscope.HistoryTask.start(address, variable)
   end
 

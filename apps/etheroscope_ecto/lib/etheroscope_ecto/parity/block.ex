@@ -26,16 +26,18 @@ defmodule EtheroscopeEcto.Parity.Block do
     |> Repo.insert()
   end
 
-  def fetch_block_time(block_number) do
+  def next_storage_module, do: EtheroscopeEth.Parity.Block
+
+  def get(block_number: block_number) do
     Logger.info "[DB] Fetching: block #{block_number}"
     with nil           <- Repo.get_by(Block, number: block_number),
-         {:ok, time}   <- EtheroscopeEth.Parity.Block.fetch_time(block_number),
+         {:ok, time}   <- apply(next_storage_module(), :fetch_time, [block_number]),
          {:ok, _block} <- create_block(%{number: block_number, time: time})
     do
       {:ok, time}
     else
-      {:error, err} -> Error.build_error_db(err, "Unable to fetch block time.")
-      block         -> {:ok, block.time}
+      {:error, err}      -> Error.build_error_db(err, "Unable to fetch block time.")
+      %Block{time: time} -> {:ok, time}
     end
   end
 end

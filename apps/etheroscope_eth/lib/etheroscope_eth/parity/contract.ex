@@ -12,8 +12,7 @@ defmodule EtheroscopeEth.Parity.Contract do
 
   def next_storage_module, do: nil
 
-  @spec get(binary()) :: {:ok, map()} | Error.t
-  def get(contract_address) do
+  def get([address: contract_address]) do
     handle_etherscan_error do
       api_key = Application.get_env(:etheroscope, :etherscan_api_key)
       url = "#{@api_base_url}/api?module=contract&action=getabi&address=#{contract_address}&apikey=#{api_key}"
@@ -39,5 +38,5 @@ defmodule EtheroscopeEth.Parity.Contract do
   def fetch_early_blocks(address), do: Block.fetch_full_history(address)
 
   @spec fetch_latest_blocks(binary(), integer()) :: {:ok, MapSet.t()} | Error.t
-  def fetch_latest_blocks(address, latest_block), do: Block.fetch({address, latest_block})
+  def fetch_latest_blocks(address, latest_block), do: Block.get({address, latest_block})
 end

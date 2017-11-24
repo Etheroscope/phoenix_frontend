@@ -21,7 +21,7 @@ defmodule EtheroscopeEcto.Parity.Contract do
   @doc false
   defp changeset(%Contract{} = contract, attrs) do
     contract
-    |> cast(attrs, [:address, :abi, :variables, :blocks])
+    |> cast(attrs, [:address, :abi, :variables, :blocks, :most_recent_block])
     |> validate_required([:address, :abi])
   end
 
@@ -33,7 +33,7 @@ defmodule EtheroscopeEcto.Parity.Contract do
   end
 
   @spec update_contract(struct(), map()) :: {:ok, Ecto.Schema.t} | {:error, Ecto.Changeset.t}
-  defp update_contract(contract, attrs) do
+  def update_contract(contract, attrs) do
     contract
     |> changeset(attrs)
     |> Repo.update()
@@ -41,26 +41,29 @@ defmodule EtheroscopeEcto.Parity.Contract do
 
   def next_storage_module, do: EtheroscopeEth.Parity.Contract
 
-  def get(opts = [address: address]) do
+  def get(address: address) do
     case load_contract(address) do
       resp = {:ok, _c}    -> resp
       {:not_found, _addr} ->
-        abi = apply(next_storage_module(), :get, opts)
-        store_contract(address, abi)
+        abi_s = apply(next_storage_module(), :get, [[address: address]])
+        store_contract(address, abi_s)
     end
   end
+  def get(address) when is_binary(address), do: get(address: address)
 
-  defp store_contract(addr, abi) do
+  defp store_contract(_addr, resp = {:error, _err}), do: resp
+  defp store_contract(addr, {:ok, abi}) do
+    Logger.info "Storing: contract #{addr}"
     case create_contract(%{address: addr, abi: abi}) do
       resp = {:ok, _c} -> resp
-      {:error, chgset}  ->
+      {:error, chgset} ->
         Error.build_error_db(chgset.errors, "Store Failed: contract #{addr}.")
     end
   end
 
   defp load_contract(addr) do
     case Repo.get_by(Contract, address: addr) do
-      nil -> {:not_found, addr}
+      nil      -> {:not_found, addr}
       contract -> {:ok, contract}
     end
   end
@@ -77,7 +80,6 @@ defmodule EtheroscopeEcto.Parity.Contract do
   end
 
   defp load_block_numbers(addr) do
-    Cache.update_task_status(self(), "loading", {})
     case get(addr) do
       {:ok, contract = %Contract{blocks: []}} -> {:not_found, contract}
       {:ok, contract}                         -> {:stale, contract} # assume it's always stale for now
@@ -86,11 +88,11 @@ defmodule EtheroscopeEcto.Parity.Contract do
   end
 
   defp update_block_numbers(contract) do
-    handle_new_blocks(contract, :fetch_latest_blocks, [contract.addr, contract.most_recent_blocks])
+    handle_new_blocks(contract, :fetch_latest_blocks, [contract.address, contract.most_recent_block])
   end
 
   defp get_full_block_history(contract) do
-    handle_new_blocks(contract, :fetch_early_blocks, [contract.addr])
+    handle_new_blocks(contract, :fetch_early_blocks, [contract.address])
   end
 
   defp handle_new_blocks(contract, fun, args) do
@@ -106,8 +108,8 @@ defmodule EtheroscopeEcto.Parity.Contract do
 
   defp store_block_numbers(contract, new_blocks) do
     case contract |> update_contract(%{blocks: contract.blocks ++ new_blocks, most_recent_block: Enum.max(new_blocks)}) do
-      resp = {:ok, _contract} -> resp
-      {:error, err}           -> Error.build_error_db(err, "Not Stored: contract blocks for #{contract.address}")
+      {:ok, new_contract} -> {:ok, new_contract.blocks}
+      {:error, err}       -> Error.build_error_db(err, "Not Stored: contract blocks for #{contract.address}")
     end
   end
 

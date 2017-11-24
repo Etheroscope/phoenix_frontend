@@ -2,13 +2,11 @@ defmodule Etheroscope.Util.Parity do
   @moduledoc """
     EtheroscopeEth.Util.Parity is used to support all other Parity handling modules.
   """
-  alias EtheroscopeEcto.Parity.{Block, VariableState}
-  alias Etheroscope.Util.{Error, Hex}
 
   @valid_filter_params ["fromBlock", "toBlock", "fromAddress", "toAddress"]
   @allowed_types ["uint", "uint8", "uint16", "uint32", "uint64", "uint128", "uint256", "int", "int8", "int16", "int32", "int64", "int128", "int256"]
 
-  def abi_variables(abi) do
+  def parse_contract_abi(abi) do
     filter_abi_variables(abi, [])
   end
 
@@ -40,17 +38,4 @@ defmodule Etheroscope.Util.Parity do
   defp is_valid_param([p | ps]) when p in @valid_filter_params, do: is_valid_param(ps)
   defp is_valid_param(_),  do: false
 
-  def process_blocks([], accum, _address, _variable) do
-    {:ok, accum}
   end
-  def process_blocks([block | blocks], accum, address, variable) do
-    with {:ok, var}  <- VariableState.fetch_variable_state(address, variable, block),
-         {:ok, time} <- Block.fetch_block_time(block)
-    do
-      process_blocks(blocks, [%{value: var.value, time: time} | accum], address, variable)
-    else
-      {:error, errors} ->
-        Error.build_error_core(errors, "No process: failed to proccess block #{block |> Hex.to_hex}")
-    end
-  end
-end
