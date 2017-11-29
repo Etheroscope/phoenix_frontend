@@ -29,4 +29,4 @@ services:
     links:
       - "db:db"
     ports:
-      - "6969:80"
+      - "4000:4000"
