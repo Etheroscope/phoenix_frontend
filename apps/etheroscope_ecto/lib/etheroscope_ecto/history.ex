@@ -8,14 +8,12 @@ defmodule EtheroscopeEcto.History do
   def get([address: address, variable: variable]) do
     with {:ok, blocks}      <- Contract.get_block_numbers(address),
          {:ok, accum, vars} <- process_blocks(blocks, [], [], address, variable),
-         {count, _}         <- VariableState.store_all(vars)
+          :ok               <- VariableState.store_all(vars)
     do
-      Logger.info "[DB] Stored #{count} variable states"
       {:ok, accum}
     else
       {:error, err, vars} ->
-        {count, _} = VariableState.store_all(vars)
-        Logger.info "[DB] Stored #{count} variable states before failing"
+        VariableState.store_all(vars)
         {:error, err}
       resp = {:error, _err} -> resp
     end

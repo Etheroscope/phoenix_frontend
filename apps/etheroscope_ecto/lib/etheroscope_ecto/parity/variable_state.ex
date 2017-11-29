@@ -46,7 +46,10 @@ defmodule EtheroscopeEcto.Parity.VariableState do
   end
 
   def store_all(var_states) do
-    Repo.insert_all(EtheroscopeEcto.Parity.VariableState, var_states)
+    for var <- var_states  do
+      Repo.insert!(var)
+    end
+    :ok
   end
 
   defp create_variable_state(_contract, variable, block_number, {:error, err}) do
