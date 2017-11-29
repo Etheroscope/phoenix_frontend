@@ -40,7 +40,7 @@ defmodule EtheroscopeWeb.ContractController do
       nil ->
         conn
         |> put_status(404)
-        |> json(%{})
+        |> json(%{:error => "Not Found"})
       {status, data} ->
         conn
         |> put_status(503)
