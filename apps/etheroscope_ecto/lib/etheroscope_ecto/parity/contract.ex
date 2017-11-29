@@ -53,7 +53,7 @@ defmodule EtheroscopeEcto.Parity.Contract do
 
   defp store_contract(_addr, resp = {:error, _err}), do: resp
   defp store_contract(addr, {:ok, abi}) do
-    Logger.info "Storing: contract #{addr}"
+    # Logger.info "Storing: contract #{addr}"
     case create_contract(%{address: addr, abi: abi}) do
       resp = {:ok, _c} -> resp
       {:error, chgset} ->
@@ -100,6 +100,8 @@ defmodule EtheroscopeEcto.Parity.Contract do
       {:ok, blocks} ->
         new_blocks = MapSet.to_list(block_numbers(blocks))
         store_block_numbers(contract, new_blocks)
+      {:error, err} ->
+        Error.build_error(err)
       {:error, err, new_blocks} ->
         if new_blocks != [], do: store_block_numbers(contract, new_blocks)
         Error.build_error(err)
@@ -136,8 +138,8 @@ defmodule EtheroscopeEcto.Parity.Contract do
 
   defp store_contract_variables(vars, contract) do
     case update_contract(contract, %{variables: vars}) do
-      resp = {:ok, _contract} -> resp
-      {:error, err}           -> Error.build_error_db(err, "Not Stored: contract variables for #{contract.address}")
+      {:ok, contract} -> {:ok, contract.variables}
+      {:error, err}   -> Error.build_error_db(err, "Not Stored: contract variables for #{contract.address}")
     end
   end
 end

@@ -2,27 +2,30 @@ defmodule EtheroscopeEcto.History do
   use Etheroscope.Util
 
   require EtheroscopeEcto
-  alias Etheroscope.Cache.Block
-  alias EtheroscopeEcto.Parity.{Contract, VariableState}
+  alias Etheroscope.Cache.{Block, Contract}
+  alias EtheroscopeEcto.Parity.VariableState
 
   def get([address: address, variable: variable]) do
-    case Contract.get_block_numbers(address) do
-      {:ok, blocks}         ->
-        process_blocks(blocks, [], address, variable)
+    with {:ok, blocks}      <- Contract.get_block_numbers(address),
+         {:ok, accum, vars} <- process_blocks(blocks, [], [], address, variable),
+         {count, _}         <- VariableState.store_all(vars)
+    do
+      Logger.info "[DB] Stored #{count} variable states"
+      {:ok, accum}
+    else
+      {:error, err, vars} ->
+        {count, _} = VariableState.store_all(vars)
+        Logger.info "[DB] Stored #{count} variable states before failing"
+        {:error, err}
       resp = {:error, _err} -> resp
     end
   end
 
-  defp process_blocks([], accum, _address, _variable), do: {:ok, accum}
-  defp process_blocks([block | blocks], accum, address, variable) do
-    with {:ok, var}  <- VariableState.get_variable_state(address, variable, block),
-         {:ok, time} <- Block.get_time(block)
-    do
-      Logger.info "[CORE] Processing: block #{time} var #{var.value}"
-      process_blocks(blocks, [%{value: var.value, time: time} | accum], address, variable)
-    else
-      {:error, errors} ->
-        Error.build_error_core(errors, "No process: failed to proccess block #{block}")
+  defp process_blocks([], accum, variable_schemas, _address, _variable), do: {:ok, accum, variable_schemas}
+  defp process_blocks([block | blocks], accum, variable_schemas, address, variable) do
+    case VariableState.get_variable_state(address, variable, block) do
+      {:ok, var} -> process_blocks(blocks, [%{value: var.value, time: var.time} | accum], [var | variable_schemas], address, variable)
+      {:error, errors} -> {:error, ["No process: failed to proccess block #{block}" | errors], variable_schemas}
     end
   end
 

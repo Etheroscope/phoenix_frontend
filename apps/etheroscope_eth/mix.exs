@@ -19,13 +19,15 @@ defmodule EtheroscopeEth.Mixfile do
   def application do
     [
       mod: {EtheroscopeEth.Application, []},
-      extra_applications: [:logger, :ethereumex]
+      extra_applications: [:logger, :ethereumex, :websockex]
     ]
   end
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      # {:ethereumex, path: "../../../ethereumex"}
+      {:websockex, "~> 0.4.0"},
       {:ethereumex, github: "Etheroscope/ethereumex"}
     ]
   end

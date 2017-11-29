@@ -11,16 +11,15 @@ defmodule Etheroscope.HistoryTask do
 
   def run(address, variable) do
     History.start(self(), address, variable)
-    case get_blocks(address, variable) do
-      {:ok, blocks} ->
-        History.finish(self(), blocks)
-        Logger.info "[CORE] Processed: contract #{address} for var #{variable}"
-      :not_found ->
-        History.not_found_error(self())
+    case :timer.tc(fn -> get_blocks(address, variable) end) do
       {:error, err} ->
-        #TODO: implement
         History.set_fetch_error(self(), err)
         Error.put_error_message(err)
+      {time, blocks} ->
+        Logger.info("TIME IS #{time}")
+        History.finish(self(), blocks)
+      :not_found ->
+        History.not_found_error(self())
     end
   end
 

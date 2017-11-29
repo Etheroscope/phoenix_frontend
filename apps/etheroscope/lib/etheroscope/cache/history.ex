@@ -4,15 +4,15 @@ defmodule Etheroscope.Cache.History do
   alias Etheroscope.Cache
 
   def default_ttl, do: 3600
+
   def next_storage_module, do: nil
 
   def get(address: address, variable: variable) do
     case Cache.match_unique_object(:histories, {:"_", {address, variable}, :"_", :"_", :"_"}) do
       {_pid, _av, "done", data, expiration}            -> Cache.check_freshness({data, expiration})
       {_pid, _av, "fetching", fetched, total_to_fetch} -> {:fetching, fetched/total_to_fetch}
-      {_pid, _av, "fetched",  _, _}                    -> {:processing, nil}
       {_pid, _av, "error", err, _}                     -> {:error, err}
-      {_pid, _av, "started",  _, _}                    -> {:started, nil}
+      {pid, _av, status,  _, _}                        -> format_status(pid, status)
       nil                                              -> nil
     end
   end
@@ -42,7 +42,13 @@ defmodule Etheroscope.Cache.History do
     Cache.update_element(:histories, pid, [{3, "error"}, {4, err}])
   end
 
-  def not_found_error(pid) do
-    set_fetch_error(pid, :not_found)
+  def not_found_error(pid), do: set_fetch_error(pid, :not_found)
+
+  def format_status(pid, status) do
+    if Process.alive?(pid) do
+      status
+    else
+      nil
+    end
   end
 end

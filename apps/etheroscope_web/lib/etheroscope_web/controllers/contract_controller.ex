@@ -15,6 +15,20 @@ defmodule EtheroscopeWeb.ContractController do
     end
   end
 
+  def get_variables(conn, %{"contract_address" => contract_address}) do
+    case Etheroscope.fetch_contract_variables(contract_address) do
+      {:ok, variables} ->
+        json conn, %{variables: variables}
+      :not_found ->
+        conn
+        |> put_status(404)
+        |> json(%{})
+      {:error, err} ->
+        put_status(conn, :internal_server_error)
+        json conn, %{:error => err}
+    end
+  end
+
   @doc """
     Returns history status or result if done.
     Returns 404 if no history task running.
@@ -39,7 +53,11 @@ defmodule EtheroscopeWeb.ContractController do
       {status, data} ->
         conn
         |> put_status(503)
-        |> json(%{status: Atom.to_string(status), data: data})
+        |> json(%{status: status, data: data})
+      status ->
+        conn
+        |> put_status(503)
+        |> json(%{status: status})
     end
   end
 
