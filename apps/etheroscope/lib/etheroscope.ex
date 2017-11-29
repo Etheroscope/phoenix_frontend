@@ -17,10 +17,6 @@ defmodule Etheroscope do
     fetch(&Contract.get_block_numbers/1, address)
   end
 
-  def fetch_contract_variables(address) do
-    fetch(&Contract.get_contract_variables/1, address)
-  end
-
   def fetch_history_status(address, variable) do
     Etheroscope.HistoryTask.status(address, variable)
   end
