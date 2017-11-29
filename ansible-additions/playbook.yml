@@ -33,7 +33,9 @@
 
     - name: run docker compose
       sudo: no
-      shell: chdir={{ deploy_app_dir }} docker-compose -e MIX_ENV=prod up -d
+      shell: chdir={{ deploy_app_dir }} docker-compose up -d
+      environment:
+        - MIX_ENV: "prod"
       become: True
 
     - name: remove stopped docker containers
