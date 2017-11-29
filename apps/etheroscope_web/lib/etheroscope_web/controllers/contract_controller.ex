@@ -3,15 +3,20 @@ defmodule EtheroscopeWeb.ContractController do
 
   def contract(conn, %{"contract_address" => contract_address}) do
     case Etheroscope.fetch_contract_abi(contract_address) do
-      {:ok, contract} ->
-        json conn, %{abi: contract}
+      {:ok, contract = %EtheroscopeEcto.Parity.Contract{}} ->
+        json conn, contract
       :not_found ->
         conn
         |> put_status(404)
         |> json(%{})
       {:error, err} ->
-        put_status(conn, :internal_server_error)
-        json conn, %{:error => err}
+        conn
+        |> put_status(:internal_server_error)
+        |> json(%{:error => inspect(err)})
+      other ->
+        conn
+        |> put_status(:internal_server_error)
+        |> json(%{:error => inspect(other)})
     end
   end
 
@@ -24,8 +29,13 @@ defmodule EtheroscopeWeb.ContractController do
         |> put_status(404)
         |> json(%{})
       {:error, err} ->
-        put_status(conn, :internal_server_error)
-        json conn, %{:error => err}
+        conn
+        |> put_status(:internal_server_error)
+        |> json(%{:error => inspect(err)})
+      other ->
+        conn
+        |> put_status(:internal_server_error)
+        |> json(%{:error => inspect(other)})
     end
   end
 
@@ -45,7 +55,7 @@ defmodule EtheroscopeWeb.ContractController do
       {:error, err} ->
         conn
         |> put_status(:internal_server_error)
-        |> json(%{:error => err})
+        |> json(%{:error => inspect(err)})
       nil ->
         conn
         |> put_status(404)

@@ -54,7 +54,7 @@ defmodule EtheroscopeEcto.Parity.Contract do
   defp store_contract(_addr, resp = {:error, _err}), do: resp
   defp store_contract(addr, {:ok, abi}) do
     # Logger.info "Storing: contract #{addr}"
-    case create_contract(%{address: addr, abi: abi}) do
+    case create_contract(%{address: addr, abi: abi, variables: parse_contract_abi(abi)}) do
       resp = {:ok, _c} -> resp
       {:error, chgset} ->
         Error.build_error_db(chgset.errors, "Store Failed: contract #{addr}.")
@@ -120,26 +120,8 @@ defmodule EtheroscopeEcto.Parity.Contract do
   @spec get_contract_abi(String.t()) :: EtheroscopeEcto.db_status()
   def get_contract_abi(addr) do
     case get(addr) do
-      {:ok, contract}       -> {:ok, contract.abi}
+      {:ok, contract}       -> {:ok, %{abi: contract.abi, variables: contract.variables}}
       resp = {:error, _err} -> resp
-    end
-  end
-
-  ################################### VARIABLES ###################################
-
-  @spec get_contract_variables(String.t()) :: EtheroscopeEcto.db_status()
-  def get_contract_variables(addr) do
-    case get(addr) do
-      {:ok, ctr = %Contract{variables: [], abi: abi}} -> abi |> parse_contract_abi |> store_contract_variables(ctr)
-      {:ok, %Contract{variables: vars}}               -> {:ok, vars}
-      {:error, err}                                   -> Error.build_error_db(err, "Fetch Failed: contract variables for #{addr}.")
-    end
-  end
-
-  defp store_contract_variables(vars, contract) do
-    case update_contract(contract, %{variables: vars}) do
-      {:ok, contract} -> {:ok, contract.variables}
-      {:error, err}   -> Error.build_error_db(err, "Not Stored: contract variables for #{contract.address}")
     end
   end
 end

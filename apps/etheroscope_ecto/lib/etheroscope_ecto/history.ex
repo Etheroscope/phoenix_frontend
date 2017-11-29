@@ -2,7 +2,7 @@ defmodule EtheroscopeEcto.History do
   use Etheroscope.Util
 
   require EtheroscopeEcto
-  alias Etheroscope.Cache.{Block, Contract}
+  alias Etheroscope.Cache.Contract
   alias EtheroscopeEcto.Parity.VariableState
 
   def get([address: address, variable: variable]) do
