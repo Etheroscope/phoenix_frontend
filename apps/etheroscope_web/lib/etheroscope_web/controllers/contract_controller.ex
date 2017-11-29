@@ -8,7 +8,7 @@ defmodule EtheroscopeWeb.ContractController do
       :not_found ->
         conn
         |> put_status(404)
-        |> json(%{})
+        |> json(%{error: "Not Found."})
       {:error, err} ->
         conn
         |> put_status(:internal_server_error)
@@ -58,11 +58,13 @@ defmodule EtheroscopeWeb.ContractController do
   def post_history(conn, %{"contract_address" => contract_address, "variable" => variable}) do
     case Etheroscope.run_history_task(contract_address, variable) do
       {:ok, _pid} ->
-        json conn, %{result: "Success"}
+        conn
+        |> put_status(201)
+        |> json(%{result: "Request Accepted"})
       {:found, _} ->
         conn
-        |> put_status(405)
-        |> json(%{result: "Already exists."})
+        |> put_status(204)
+        |> json(%{result: "Request Already Submitted"})
       {:error, err} ->
         conn
         |> put_status(:internal_server_error)
