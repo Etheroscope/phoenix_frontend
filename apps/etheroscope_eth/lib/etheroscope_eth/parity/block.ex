@@ -12,7 +12,7 @@ defmodule EtheroscopeEth.Parity.Block do
 
   def next_storage_module, do: nil
 
-  def start_block_number, do: blocks_ago(150_000)
+  def start_block_number, do: blocks_ago(1_000_000)
 
   def blocks_ago(number) do
     case Cache.Block.get_current() do
@@ -32,6 +32,8 @@ defmodule EtheroscopeEth.Parity.Block do
       {:ok, %{"timestamp" => timestamp}} ->
         # Logger.info "[ETH] Fetched: block #{block_number} time = #{Hex.from_hex(timestamp)}"
         {:ok, Hex.from_hex(timestamp)}
+      {:ok, nil} ->
+        {:error, :unknown}
       {:error, err} -> Error.build_error_eth(err, "Fetch Failed: Block time")
     end
   end
@@ -64,6 +66,7 @@ defmodule EtheroscopeEth.Parity.Block do
     else
       case address |> batched_filter_params(block_num) |> Parity.trace_filter do
         {:ok, ts} ->
+          Logger.info "[ETH] Fetching: blocks #{block_num} to #{block_num + @batch_size} for #{address} "
           Cache.History.update_fetch_status(self(), @batch_size)
           fetch_batch(address, block_num + @batch_size, ts ++ list)
         {:error, err} ->

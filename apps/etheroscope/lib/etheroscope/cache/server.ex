@@ -52,8 +52,9 @@ defmodule Etheroscope.Cache.Server do
   def handle_call({:match_unique, table, pattern}, _from, _state) do
     handle_missing_table(table) do
       {:reply, (case :ets.match_object(table, pattern) do
-        [match] -> match
-        []      -> nil
+        [match]        -> match
+        [head | _rest] -> head
+        []             -> nil
       end), []}
     end
   end

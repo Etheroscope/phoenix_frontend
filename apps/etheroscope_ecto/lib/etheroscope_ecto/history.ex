@@ -4,27 +4,34 @@ defmodule EtheroscopeEcto.History do
   require EtheroscopeEcto
   alias Etheroscope.Cache.Contract
   alias EtheroscopeEcto.Parity.VariableState
+  alias Etheroscope.Cache.History
 
   def get([address: address, variable: variable]) do
-    with {:ok, blocks}      <- Contract.get_block_numbers(address),
-         {:ok, accum, vars} <- process_blocks(blocks, [], [], address, variable),
-          :ok               <- VariableState.store_all(vars)
-    do
-      {:ok, accum}
-    else
-      {:error, err, vars} ->
-        VariableState.store_all(vars)
-        {:error, err}
-      resp = {:error, _err} -> resp
+    case Contract.get_block_numbers(address) do
+      {:ok, new_blocks} ->
+        Logger.info "[CORE] NEW BLOCKS ARE #{inspect(new_blocks)}"
+        History.start_process_status(self(), length(new_blocks))
+        # Store all processed blocks
+        vars = new_blocks
+        |> process_blocks(address, variable)
+
+        Logger.info "[CORE] PROCESSED ALL BLOCKS"
+        Logger.info(inspect(vars))
+        VariableState.store_all(vars, address)
+        History.finish_process_status(self())
+
+        VariableState.fetch_all_variable_states(address, variable)
+      resp = {:error, _err} ->
+        resp
     end
   end
 
-  defp process_blocks([], accum, variable_schemas, _address, _variable), do: {:ok, accum, variable_schemas}
-  defp process_blocks([block | blocks], accum, variable_schemas, address, variable) do
-    case VariableState.get_variable_state(address, variable, block) do
-      {:ok, var}       -> process_blocks(blocks, [%{value: var.value, time: var.time} | accum], [var | variable_schemas], address, variable)
-      {:error, errors} -> {:error, ["No process: failed to proccess block #{block}" | errors], variable_schemas}
-    end
+  defp process_blocks(blocks, address, variable) do
+    Enum.map(blocks, fn (block) ->
+      Logger.info "[CORE] PROCESSING #{block}"
+      History.update_process_status(self(), 1)
+      VariableState.get_variable_state(address, variable, block)
+    end)
   end
 
 end

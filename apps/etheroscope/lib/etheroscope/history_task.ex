@@ -15,7 +15,7 @@ defmodule Etheroscope.HistoryTask do
       {_time, {:error, err}} ->
         History.set_fetch_error(self(), err)
         Error.put_error_message(err)
-      {time, {:ok, blocks}} ->
+      {time, blocks} ->
         Logger.info("TIME IS #{time}")
         History.finish(self(), blocks)
       :not_found ->

@@ -7,8 +7,8 @@ defmodule EtheroscopeWeb.ContractController do
         json conn, contract
       :not_found ->
         conn
-        |> put_status(404)
-        |> json(%{error: "Not Found."})
+        |> put_status(400)
+        |> json(%{abi: [], variables: [], error: "NO_ABI_ETHERSCAN"})
       {:error, err} ->
         conn
         |> put_status(:internal_server_error)
@@ -48,7 +48,7 @@ defmodule EtheroscopeWeb.ContractController do
       status ->
         conn
         |> put_status(:internal_server_error)
-        |> json(%{:error => inspect(status)})
+        |> json(%{:error => status})
     end
   end
 
