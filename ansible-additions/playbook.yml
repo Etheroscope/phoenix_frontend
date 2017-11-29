@@ -33,7 +33,7 @@
 
     - name: run docker compose
       sudo: no
-      shell: chdir={{ deploy_app_dir }} docker-compose -f docker-compose.production.yml up -d
+      shell: chdir={{ deploy_app_dir }} docker-compose -e MIX_ENV=prod up -d
       become: True
 
     - name: remove stopped docker containers
