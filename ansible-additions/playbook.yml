@@ -36,6 +36,7 @@
       shell: chdir={{ deploy_app_dir }} docker-compose up -d
       environment:
         - MIX_ENV: "prod"
+        - PORT: "4000"
       become: True
 
     - name: remove stopped docker containers
