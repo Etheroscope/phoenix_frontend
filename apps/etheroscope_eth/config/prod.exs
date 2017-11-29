@@ -2,6 +2,6 @@ use Mix.Config
 
 config :ethereumex,
   scheme: "http",
-  host: "parity.etheroscope.info",
+  host: System.get_env("ETHERSCAN_API_KEY"),
   port: 8545,
   timeout: :infinity

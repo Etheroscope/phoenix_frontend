@@ -3,6 +3,11 @@ defmodule Etheroscope.Util do
     Etheroscope.Util will allow global access to tools defined within the context.
   """
 
+  def max([]), do: -1
+  def max(l),  do: Enum.max(l)
+
+  # REQUIRY FUNCTIONS
+
   def essential do
     quote do
       require Logger
