@@ -24,7 +24,7 @@ defmodule EtheroscopeEcto.History do
   defp process_blocks([], accum, variable_schemas, _address, _variable), do: {:ok, accum, variable_schemas}
   defp process_blocks([block | blocks], accum, variable_schemas, address, variable) do
     case VariableState.get_variable_state(address, variable, block) do
-      {:ok, var} -> process_blocks(blocks, [%{value: var.value, time: var.time} | accum], [var | variable_schemas], address, variable)
+      {:ok, var}       -> process_blocks(blocks, [%{value: var.value, time: var.time} | accum], [var | variable_schemas], address, variable)
       {:error, errors} -> {:error, ["No process: failed to proccess block #{block}" | errors], variable_schemas}
     end
   end

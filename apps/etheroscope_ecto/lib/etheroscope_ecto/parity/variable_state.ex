@@ -53,13 +53,18 @@ defmodule EtheroscopeEcto.Parity.VariableState do
     Error.build_error_db(err, "Fetch Failed: Variable State for #{variable} at block #{block_number}.")
   end
   defp create_variable_state(contract, variable, block_number, {:ok, value}) do
-    contract
-    |> Ecto.build_assoc(:variable_states, %{
-      value: Integer.to_string(value),
-      block_number: block_number,
-      time: Block.get_time(block_number),
-      variable: variable
-    })
+    case Block.get_time(block_number) do
+      {:ok, time} ->
+        {:ok,
+          contract
+          |> Ecto.build_assoc(:variable_states, %{
+            value: Integer.to_string(value),
+            block_number: block_number,
+            time: time,
+            variable: variable
+          })
+        }
+      resp = {:error, _err} -> resp
   end
 
   defp load_variable_state(address, variable, block_number) do
