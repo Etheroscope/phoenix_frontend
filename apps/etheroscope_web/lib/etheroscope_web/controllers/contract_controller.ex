@@ -3,7 +3,7 @@ defmodule EtheroscopeWeb.ContractController do
 
   def contract(conn, %{"contract_address" => contract_address}) do
     case Etheroscope.fetch_contract_abi(contract_address) do
-      {:ok, contract = %EtheroscopeEcto.Parity.Contract{}} ->
+      {:ok, contract} ->
         json conn, contract
       :not_found ->
         conn
