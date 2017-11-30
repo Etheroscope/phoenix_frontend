@@ -28,15 +28,14 @@ defmodule EtheroscopeWeb.ContractController do
     case Etheroscope.fetch_history_status(contract_address, variable) do
       {:ok, data} ->
         conn
-        |> json(%{data: data})
+        |> json(%{status: "ok", data: data})
+      {:stale, data} ->
+        conn
+        |> json(%{status: "stale", data: data})
       nil ->
         conn
         |> put_status(404)
         |> json(%{:error => "Not Found"})
-      {:error, :expired} ->
-        conn
-        |> put_status(410)
-        |> json(%{:error => "Current history is stale."})
       {:error, :not_found} ->
         conn
         |> put_status(422)

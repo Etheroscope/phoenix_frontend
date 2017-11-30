@@ -6,7 +6,7 @@ defmodule Etheroscope.HistoryTask do
     case History.get(address: address, variable: variable) do
       nil                ->
         Task.Supervisor.start_child(Etheroscope.TaskSupervisor, fn -> run(address, variable) end)
-      {:error, :expired} ->
+      {:stale, _data} ->
         History.delete_history(address, variable)
         Task.Supervisor.start_child(Etheroscope.TaskSupervisor, fn -> run(address, variable) end)
       _other        -> {:found, nil}
