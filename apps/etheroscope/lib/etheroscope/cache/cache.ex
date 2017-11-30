@@ -16,6 +16,13 @@ defmodule Etheroscope.Cache do
     GenServer.call(@server, {:lookup, table, key})
   end
 
+  def lookup_key(table, pattern) do
+    case GenServer.call(@server, {:match_unique, table, pattern}) do
+      nil -> nil
+      tup -> tup |> Tuple.to_list |> hd
+    end
+  end
+
   def match_unique_object(table, pattern) do
     GenServer.call(@server, {:match_unique, table, pattern})
   end
@@ -28,11 +35,15 @@ defmodule Etheroscope.Cache do
     GenServer.cast(@server, {:update_counter, table, key, pos, step})
   end
 
+  def delete(table, key) do
+    GenServer.cast(@server, {:delete, table, key})
+  end
+
   def check_freshness({value, expiration}) do
     if expiration > :os.system_time(:seconds) do
       {:ok, value}
     else
-      nil
+      {:error, :expired}
     end
   end
   def check_freshness(other), do: other

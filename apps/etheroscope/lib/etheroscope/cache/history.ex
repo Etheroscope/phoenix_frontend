@@ -8,17 +8,21 @@ defmodule Etheroscope.Cache.History do
   def next_storage_module, do: nil
 
   def get_pid(address, variable) do
-    :ets.match_object(:histories, {:"$1", {address, variable}, :"_", :"_", :"_"})
+    Cache.lookup_key(:histories, {:"$1", {address, variable}, :"_", :"_", :"_"})
   end
 
   def get(address: address, variable: variable) do
-    Logger.warn inspect(Cache.match_unique_object(:histories, {:"_", {address, variable}, :"_", :"_", :"_"}))
     case Cache.match_unique_object(:histories, {:"_", {address, variable}, :"_", :"_", :"_"}) do
       {_pid, _av, "done", data, expiration} -> Cache.check_freshness({data, expiration})
       {_pid, _av, "error", err, _}          -> {:error, err}
       {pid, _av, status,  val1, val2}       -> format_status(pid, status, val1, val2)
       nil                                   -> nil
     end
+  end
+
+  def delete_history(address, variable) do
+    pid = get_pid(address, variable)
+    Cache.delete(:histories, pid)
   end
 
   def start(pid, address, variable) do
@@ -66,7 +70,9 @@ defmodule Etheroscope.Cache.History do
 
   def format_status(pid, status, val1, val2) do
     cond do
-      !Process.alive?(pid)                           -> {:error, "Task Failed"}
+      !Process.alive?(pid) ->
+        Cache.delete(:histories, pid)
+        {:error, "Task Failed"}
       status == "fetching" || status == "processing" -> {status, val1/val2}
       :else                                          -> status
     end

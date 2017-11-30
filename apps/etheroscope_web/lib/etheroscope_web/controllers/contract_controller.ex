@@ -29,6 +29,14 @@ defmodule EtheroscopeWeb.ContractController do
       {:ok, data} ->
         conn
         |> json(%{data: data})
+      nil ->
+        conn
+        |> put_status(404)
+        |> json(%{:error => "Not Found"})
+      {:error, :expired} ->
+        conn
+        |> put_status(410)
+        |> json(%{:error => "Current history is stale."})
       {:error, :not_found} ->
         conn
         |> put_status(422)
@@ -37,10 +45,6 @@ defmodule EtheroscopeWeb.ContractController do
         conn
         |> put_status(:internal_server_error)
         |> json(%{:error => inspect(err)})
-      nil ->
-        conn
-        |> put_status(404)
-        |> json(%{:error => "Not Found"})
       {status, data} ->
         conn
         |> put_status(503)

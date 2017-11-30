@@ -38,6 +38,10 @@ defmodule Etheroscope.Cache.Server do
     {:noreply, update(table, &:ets.update_element/3, key, updaters)}
   end
 
+  def handle_cast({:delete, table, key}, _from) do
+    {:noreply, :ets.delete(table, key)}
+  end
+
   def handle_call({:lookup, table, key}, _from, _state) do
     handle_missing_table(table) do
       {:reply, (case :ets.lookup(table, key) do
