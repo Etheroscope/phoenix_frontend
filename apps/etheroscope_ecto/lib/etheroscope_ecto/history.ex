@@ -12,13 +12,11 @@ defmodule EtheroscopeEcto.History do
         Logger.info "[CORE] NEW BLOCKS ARE #{inspect(new_blocks)}"
         History.start_process_status(self(), length(new_blocks))
         # Store all processed blocks
-        vars = new_blocks
-        |> process_blocks(address, variable)
-
-        Logger.info "[CORE] PROCESSED ALL BLOCKS"
-        Logger.info(inspect(vars))
-        VariableState.store_all(vars, address)
+        vars = process_blocks(new_blocks, address, variable)
         History.finish_process_status(self())
+
+        History.start_store_status(self())
+        VariableState.store_all(vars, address)
 
         VariableState.fetch_all_variable_states(address, variable)
       resp = {:error, _err} ->

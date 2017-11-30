@@ -39,7 +39,7 @@ defmodule EtheroscopeEth.Parity.Block do
   end
 
   @spec fetch_full_history(String.t()) :: {:ok, list()} | Error.t()
-  def fetch_full_history(address), do: get({address, {:ok, start_block_number()}})
+  def fetch_full_history(address), do: get({address, {:ok, 0}})
 
   @spec get({String.t(), {atom(), integer()}}) :: {:ok, list()} | Error.t()
   def get({address, {:ok, block_num}}) when is_integer(block_num) do
@@ -53,7 +53,6 @@ defmodule EtheroscopeEth.Parity.Block do
         # Logger.info "[ETH] Fetching: blocks #{block_num} to #{Cache.Block.get_current!()} for #{address}"
         fetch_batch(address, block_num, [])
       resp = {:error, _err} ->
-        Logger.info "Block get error"
         resp
     end
   end
@@ -81,7 +80,6 @@ defmodule EtheroscopeEth.Parity.Block do
     case Cache.Block.get_current() do
       {:ok, val}            -> {:ok, val - start_block}
       resp = {:error, _err} ->
-        Logger.info "total_blocks_to_be_fetched error"
         resp
     end
   end

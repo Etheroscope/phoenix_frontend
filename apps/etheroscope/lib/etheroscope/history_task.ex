@@ -4,8 +4,10 @@ defmodule Etheroscope.HistoryTask do
 
   def start(address, variable) do
     case History.get(address: address, variable: variable) do
-      nil    -> Task.Supervisor.start_child(Etheroscope.TaskSupervisor, fn -> run(address, variable) end)
-      _other -> {:found, nil}
+      nil            -> Task.Supervisor.start_child(Etheroscope.TaskSupervisor, fn -> run(address, variable) end)
+      {:error, _err} ->
+        Task.Supervisor.start_child(Etheroscope.TaskSupervisor, fn -> run(address, variable) end)
+      _other        -> {:found, nil}
     end
   end
 

@@ -53,7 +53,6 @@ defmodule Etheroscope.Cache.Server do
     handle_missing_table(table) do
       {:reply, (case :ets.match_object(table, pattern) do
         [match]        -> match
-        [head | _rest] -> head
         []             -> nil
       end), []}
     end

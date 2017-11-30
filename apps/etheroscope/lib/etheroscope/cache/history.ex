@@ -53,6 +53,10 @@ defmodule Etheroscope.Cache.History do
     Cache.update_element(:histories, pid, {3, "processed"})
   end
 
+  def start_store_status(pid) do
+    Cache.update_element(:histories, pid, {3, "caching"})
+  end
+
   def set_fetch_error(pid, err) do
     Cache.update_element(:histories, pid, [{3, "error"}, {4, err}])
   end
