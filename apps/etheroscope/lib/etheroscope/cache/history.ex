@@ -12,6 +12,7 @@ defmodule Etheroscope.Cache.History do
   end
 
   def get(address: address, variable: variable) do
+    Logger.warn inspect(Cache.match_unique_object(:histories, {:"_", {address, variable}, :"_", :"_", :"_"}))
     case Cache.match_unique_object(:histories, {:"_", {address, variable}, :"_", :"_", :"_"}) do
       {_pid, _av, "done", data, expiration} -> Cache.check_freshness({data, expiration})
       {_pid, _av, "error", err, _}          -> {:error, err}
@@ -65,7 +66,7 @@ defmodule Etheroscope.Cache.History do
 
   def format_status(pid, status, val1, val2) do
     cond do
-      !Process.alive?(pid)                           -> nil
+      !Process.alive?(pid)                           -> {:error, "Task Failed"}
       status == "fetching" || status == "processing" -> {status, val1/val2}
       :else                                          -> status
     end

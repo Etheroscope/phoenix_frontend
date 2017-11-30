@@ -26,6 +26,11 @@ defmodule Etheroscope.Cache.Block do
     end
   end
 
+
+  def up_to_date?(block_number) do
+    (get_current!() - block_number) < 240
+  end
+
   def get_time(block_number), do: get([block_number: block_number])
 
   def get(block_number: block_number) do

@@ -4,6 +4,7 @@ defmodule EtheroscopeEcto.Parity.Contract do
   import Ecto.Changeset
   require EtheroscopeEcto
   alias EtheroscopeEcto.Repo
+  alias Etheroscope.Cache.Block
   alias EtheroscopeEcto.Parity.{Contract, VariableState}
 
   schema "contracts" do
@@ -82,7 +83,12 @@ defmodule EtheroscopeEcto.Parity.Contract do
   defp load_block_numbers(addr) do
     case get(addr) do
       {:ok, contract = %Contract{blocks: []}} -> {:not_found, contract}
-      {:ok, contract}                         -> {:stale, contract} # assume it's always stale for now
+      {:ok, contract} ->
+        if Block.up_to_date?(contract.most_recent_block) do
+          {:ok, contract.blocks}
+        else
+          {:stale, contract}
+        end
       resp = {:error, _err}                   -> resp
     end
   end
