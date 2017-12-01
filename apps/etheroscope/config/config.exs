@@ -2,7 +2,7 @@ use Mix.Config
 
 config :etheroscope,
   etherscan_api_key: System.get_env("ETHERSCAN_API_KEY") || "0000000000000",
-  email_notifier_url: "http://10.0.3.4:80"
+  email_notifier_url: "http://notifier.etheroscope.info"
 
 # Configures Elixir's Logger
 config :logger, :console,
