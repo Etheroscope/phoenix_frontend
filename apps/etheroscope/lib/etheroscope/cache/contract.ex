@@ -12,7 +12,9 @@ defmodule Etheroscope.Cache.Contract do
       {:stale, blocks} -> get_new_blocks(address, blocks)
       nil              -> get_new_blocks(address, [])
       {:error, err}    -> Error.build_error(err)
-      res              -> res
+      res              ->
+        Logger.info "ALL BLOCKS #{inspect res}"
+        res
     end
   end
 
