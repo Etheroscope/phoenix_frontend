@@ -22,6 +22,7 @@ defmodule Etheroscope.HistoryTask do
       {time, blocks} ->
         Logger.info("TIME IS #{time}")
         History.finish(self(), blocks)
+        notifier().notify(address, variable)
       :not_found ->
         History.not_found_error(self())
     end
