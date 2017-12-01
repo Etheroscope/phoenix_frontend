@@ -3,7 +3,7 @@ defmodule Etheroscope.Cache.History do
 
   alias Etheroscope.Cache
 
-  def default_ttl, do: 2 |> :timer.minutes
+  def default_ttl, do: 60 
 
   def next_storage_module, do: nil
 

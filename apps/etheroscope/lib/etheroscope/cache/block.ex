@@ -11,7 +11,7 @@ defmodule Etheroscope.Cache.Block do
   def get_current! do
     case get_current() do
       {:ok, val}    -> val
-      {:error, err} -> Error.put_error_message(err)
+      {:error, err} -> raise "CurrentTime Error: " <> inspect(err)
     end
   end
   def get_current do

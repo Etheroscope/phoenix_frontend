@@ -18,10 +18,7 @@ defmodule EtheroscopeEcto.History do
         History.start_store_status(self())
         VariableState.store_all(vars, address)
 
-        # VariableState.fetch_all_variable_states(address, variable)
-        res = VariableState.fetch_all_variable_states(address, variable)
-        Logger.info inspect(res)
-        res
+        VariableState.fetch_all_variable_states(address, variable)
       resp = {:error, _err} ->
         resp
     end
