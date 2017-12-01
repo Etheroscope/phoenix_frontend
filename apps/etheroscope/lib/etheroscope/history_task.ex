@@ -12,7 +12,8 @@ defmodule Etheroscope.HistoryTask do
 
   def start(address, variable) do
     case History.get(address: address, variable: variable) do
-      nil -> start_task(address, variable)
+      nil ->
+        start_task(address, variable)
       {:stale, _data} ->
         History.delete_history(address, variable)
         start_task(address, variable)
