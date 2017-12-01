@@ -8,11 +8,11 @@ defmodule Etheroscope.Cache.History do
   def next_storage_module, do: nil
 
   def get_pid(address, variable) do
-    Cache.lookup_key(:histories, {:"$1", {address, variable}, :"_", :"_", :"_"})
+    Cache.lookup_key(:histories, {:"$1", {address, variable}, :"_", :"_", :"_", :"_"})
   end
 
   def get(address: address, variable: variable) do
-    case Cache.match_unique_object(:histories, {:"_", {address, variable}, :"_", :"_", :"_"}) do
+    case Cache.match_unique_object(:histories, {:"_", {address, variable}, :"_", :"_", :"_", :"_"}) do
       {_pid, _av, "done", _val, expiration, data} -> Cache.check_freshness({data, expiration})
       {_pid, _av, "error", err, _, _}             -> {:error, err}
       {pid, _av, status,  val1, val2, old_value}  -> format_status(pid, status, val1, val2, old_value)
