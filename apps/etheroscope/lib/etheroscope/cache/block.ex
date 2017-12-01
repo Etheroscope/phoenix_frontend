@@ -18,7 +18,7 @@ defmodule Etheroscope.Cache.Block do
     with nil        <- Cache.lookup_elem(:blocks, "current_block"),
          {:ok, val} <- apply(EtheroscopeEth.Parity, :current_block_number, [])
     do
-      # Logger.info "[CACHE] Adding current block"
+      # Logger.info "Adding current block"
       Cache.add_elem_with_expiration(:blocks, {"current_block", val}, @default_ttl)
       {:ok, val}
     else

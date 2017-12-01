@@ -9,7 +9,7 @@ defmodule EtheroscopeEcto.History do
   def get([address: address, variable: variable]) do
     case Contract.get_block_numbers(address) do
       {:ok, new_blocks} ->
-        Logger.info "[CORE] NEW BLOCKS ARE #{inspect(new_blocks)}"
+        Logger.info "NEW BLOCKS ARE #{inspect(new_blocks)}"
         History.start_process_status(self(), length(new_blocks))
         # Store all processed blocks
         vars = process_blocks(new_blocks, address, variable)

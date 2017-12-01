@@ -71,7 +71,6 @@ defmodule Etheroscope.Cache.History do
   def format_status(pid, status, val1, val2) do
     cond do
       !Process.alive?(pid) ->
-        Cache.delete(:histories, pid)
         {:error, "Task Failed"}
       status == "fetching" || status == "processing" -> {status, val1/val2}
       :else                                          -> status

@@ -14,10 +14,10 @@ defmodule EtheroscopeEth.Parity.VariableState do
     Returns the calculated integer value for the variable at the given block.
   """
   def get([address: address, variable: variable, block_number: block_number]) do
-    # Logger.info "[ETH] Fetching #{variable} in #{address} at block #{block_number}"
+    # Logger.info "Fetching #{variable} in #{address} at block #{block_number}"
     case variable |> Parity.keccak_value |> Parity.variable_value(address, Hex.to_hex(block_number)) do
       {:ok, var} ->
-        # Logger.info "[ETH] Fetched #{variable} with value #{var} = #{Hex.from_hex(var)}"
+        # Logger.info "Fetched #{variable} with value #{var} = #{Hex.from_hex(var)}"
         {:ok, Hex.from_hex(var)}
       {:error, err} ->
         Error.build_error_eth(err, "Fetch Failed: failed for #{variable} at block #{block_number}.")

@@ -8,14 +8,19 @@ defmodule Etheroscope.Cache.Contract do
   def next_storage_module, do: EtheroscopeEcto.Parity.Contract
 
   def get_block_numbers(address) do
-    with {:stable, blocks} <- Cache.lookup_elem(:contract_blocks, address),
-         {:ok, new_blocks} <- apply(next_storage_module(), :get_block_numbers, [address])
-    do
-      Cache.add_elem_with_expiration(:contract_blocks, {address, blocks ++ new_blocks}, default_ttl())
-      {:ok, new_blocks}
-    else
-      {:error, err} -> Error.build_error(err)
-      res           -> res
+    case Cache.lookup_elem(:contract_blocks, address) do
+      {:stale, blocks} -> get_new_blocks(address, blocks)
+      nil              -> get_new_blocks(address, [])
+      {:error, err}    -> Error.build_error(err)
+      res              -> res
     end
+  end
+
+  defp get_new_blocks(address, blocks) do
+    resp = {status, new_blocks} = apply(next_storage_module(), :get_block_numbers, [address])
+    if status == :ok do
+      Cache.add_elem_with_expiration(:contract_blocks, {address, blocks ++ new_blocks}, default_ttl())
+    end
+    resp
   end
 end

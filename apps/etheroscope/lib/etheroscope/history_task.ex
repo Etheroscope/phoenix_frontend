@@ -2,13 +2,23 @@ defmodule Etheroscope.HistoryTask do
   use Etheroscope.Util, :parity
   alias Etheroscope.Cache.History
 
+  def notifier do
+    Etheroscope.Notifier.Email
+  end
+
+  def start_task(address, variable) do
+    Task.Supervisor.start_child(Etheroscope.TaskSupervisor, fn -> run(address, variable) end)
+  end
+
   def start(address, variable) do
     case History.get(address: address, variable: variable) do
-      nil                ->
-        Task.Supervisor.start_child(Etheroscope.TaskSupervisor, fn -> run(address, variable) end)
+      nil -> start_task(address, variable)
       {:stale, _data} ->
         History.delete_history(address, variable)
-        Task.Supervisor.start_child(Etheroscope.TaskSupervisor, fn -> run(address, variable) end)
+        start_task(address, variable)
+      {:error, _data} ->
+        History.delete_history(address, variable)
+        start_task(address, variable)
       _other        -> {:found, nil}
     end
   end
