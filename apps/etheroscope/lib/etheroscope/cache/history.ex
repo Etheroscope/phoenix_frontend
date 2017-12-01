@@ -3,7 +3,7 @@ defmodule Etheroscope.Cache.History do
 
   alias Etheroscope.Cache
 
-  def default_ttl, do: 3600
+  def default_ttl, do: 30
 
   def next_storage_module, do: nil
 
@@ -13,10 +13,10 @@ defmodule Etheroscope.Cache.History do
 
   def get(address: address, variable: variable) do
     case Cache.match_unique_object(:histories, {:"_", {address, variable}, :"_", :"_", :"_"}) do
-      {_pid, _av, "done", data, expiration} -> Cache.check_freshness({data, expiration})
-      {_pid, _av, "error", err, _}          -> {:error, err}
-      {pid, _av, status,  val1, val2}       -> format_status(pid, status, val1, val2)
-      nil                                   -> nil
+      {_pid, _av, "done", _val, expiration, data} -> Cache.check_freshness({data, expiration})
+      {_pid, _av, "error", err, _, _}             -> {:error, err}
+      {pid, _av, status,  val1, val2, old_value}  -> format_status(pid, status, val1, val2, old_value)
+      nil                                         -> nil
     end
   end
 
@@ -25,13 +25,13 @@ defmodule Etheroscope.Cache.History do
     Cache.delete(:histories, pid)
   end
 
-  def start(pid, address, variable) do
-    Cache.add_elem(:histories, {pid, {address, variable}, "started", 0, 0})
+  def start(pid, start_value, address, variable) do
+    Cache.add_elem(:histories, {pid, {address, variable}, "started", 0, 0, start_value})
   end
 
   def finish(pid, data) do
     expiration = :os.system_time(:seconds) + default_ttl()
-    Cache.update_element(:histories, pid, [{3, "done"}, {4, data}, {5, expiration}])
+    Cache.update_element(:histories, pid, [{3, "done"}, {5, expiration}, {6, data}])
   end
 
   def start_fetch_status(pid, total_blocks) do
@@ -68,13 +68,13 @@ defmodule Etheroscope.Cache.History do
 
   def not_found_error(pid), do: set_fetch_error(pid, :not_found)
 
-  def format_status(pid, status, val1, val2) do
+  def format_status(pid, status, val1, val2, old_value) do
     cond do
       !Process.alive?(pid) ->
         Cache.delete(:histories, pid)
         {:error, "Task Failed"}
-      status == "fetching" || status == "processing" -> {status, val1/val2}
-      :else                                          -> status
+      status == "fetching" || status == "processing" -> {status, {val1/val2, old_value}}
+      :else                                          -> {status, old_value}
     end
   end
 end

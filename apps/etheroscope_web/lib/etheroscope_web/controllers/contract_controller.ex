@@ -44,6 +44,10 @@ defmodule EtheroscopeWeb.ContractController do
         conn
         |> put_status(:internal_server_error)
         |> json(%{:error => inspect(err)})
+      {status, {progress, data}} ->
+        conn
+        |> put_status(503)
+        |> json(%{status: status, progress: progress, data: data})
       {status, data} ->
         conn
         |> put_status(503)
