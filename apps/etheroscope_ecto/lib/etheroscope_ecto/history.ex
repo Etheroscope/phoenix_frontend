@@ -18,6 +18,7 @@ defmodule EtheroscopeEcto.History do
         History.start_store_status(self())
         VariableState.store_all(vars, address)
 
+        # VariableState.fetch_all_variable_states(address, variable)
         res = VariableState.fetch_all_variable_states(address, variable)
         Logger.info inspect(res)
         res
@@ -27,7 +28,7 @@ defmodule EtheroscopeEcto.History do
   end
 
   defp process_blocks(blocks, address, variable) do
-    Util.pmap(blocks, fn (block) ->
+    Util.map(blocks, fn (block) ->
       Logger.info "PROCESSING #{block}"
       History.update_process_status(self(), 1)
       VariableState.get_variable_state(address, variable, block)
