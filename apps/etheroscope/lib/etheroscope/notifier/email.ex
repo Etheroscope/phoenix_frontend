@@ -39,7 +39,4 @@ defmodule Etheroscope.Notifier.Email do
   end
   def subscribe(_), do: {:error, "[NOTIFIER] Bad Parameters"}
 
-  defp cast_request(payload) do
-
-  end
 end
