@@ -116,7 +116,9 @@ defmodule EtheroscopeEcto.Parity.Contract do
 
   defp store_block_numbers(contract, new_blocks) do
     case contract |> update_contract(%{blocks: contract.blocks ++ new_blocks, most_recent_block: Util.max(new_blocks)}) do
-      {:ok, _new_contract} -> {:ok, contract.blocks ++ new_blocks}
+      {:ok, _new_contract} ->
+        Logger.info "Current Blocks are #{inspect(contract.blocks)}"
+        {:ok, contract.blocks ++ new_blocks}
       {:error, err}        -> Error.build_error_db(err, "Not Stored: contract blocks for #{contract.address}")
     end
   end
