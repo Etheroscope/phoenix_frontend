@@ -5,9 +5,8 @@ defmodule EtheroscopeWeb.NotificationController do
     Etheroscope.Notifier.Email
   end
 
-  def subscribe(conn, params = %{"contract_address" => _addr, "variable" => _var, "email" => _email}) do
-    params
-    |> notifier().subscribe
+  def subscribe(conn, %{"contract_address" => addr, "variable" => var, "email_address" => email}) do
+    notifier().subscribe(email, addr, var)
     |> handle_response(conn)
   end
   def subscribe(conn, _) do
