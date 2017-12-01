@@ -40,7 +40,8 @@ defmodule Etheroscope.Cache do
   end
 
   def check_freshness({value, expiration}) do
-    status = if expiration > :os.system_time(:seconds), do: :ok, else: :stale
+    status = if (expiration > :os.system_time(:seconds)), do: :ok, else: :stale
+
     {status, value}
   end
   def check_freshness(other), do: other
