@@ -28,7 +28,7 @@ defmodule EtheroscopeEcto.History do
   end
 
   defp process_blocks(blocks, address, variable) do
-    Util.map(blocks, fn (block) ->
+    Enum.map(blocks, fn (block) ->
       Logger.info "PROCESSING #{block}"
       History.update_process_status(self(), 1)
       VariableState.get_variable_state(address, variable, block)
