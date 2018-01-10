@@ -15,8 +15,8 @@ First, set up your local database configuration. To do
  this, create the file `apps/etheroscope_db/config/local.exs`. A template has
  been provided for your convenience (`apps/etheroscope_db/config/local.template.exs`).
 
-Second, you'll need to set up an Etherscan API key. To do this, create the file 
-`apps/etheroscope/config/local.exs`, similar to the database config above. 
+Second, you'll need to set up an Etherscan API key. To do this, create the file
+`apps/etheroscope/config/local.exs`, similar to the database config above.
 You can find a template in the same directory.
 
 You can then start the server with `mix phx.server`.
@@ -29,16 +29,19 @@ These files exist in the umbrella app as well as in every app within:
   * *config/*: Files to set system wide config variables in given environments.
   * *mix.exs*: Define app properties (dependencies, aliases, etc.)
 
-
 ## Apps
 
 ### Etheroscope
 
 This app contains the main business logic behind the backend. Any function that deals with transforming should be written here. See more [here](apps/etheroscope/README.md)
 
-### Etheroscope DB
+### Etheroscope Ecto
 
-This app interacts with the database. Any function that loads/stores data to/from the database should be placed here. See more [here](apps/etheroscope_db/README.md)
+This app interacts with the database. Any function that loads/stores data to/from the database should be placed here. See more [here](apps/etheroscope_ecto/README.md)
+
+### Etheroscope Eth
+
+This app interacts with our Ethereum node. Any function that connects with the Parity node or Etherscan should be placed here. See more [here](apps/etheroscope_eth/README.md)
 
 ### Etheroscope Web
 

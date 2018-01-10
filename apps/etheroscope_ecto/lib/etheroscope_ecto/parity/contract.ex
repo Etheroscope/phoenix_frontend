@@ -4,6 +4,7 @@ defmodule EtheroscopeEcto.Parity.Contract do
   import Ecto.Changeset
   require EtheroscopeEcto
   alias EtheroscopeEcto.Repo
+  alias Etheroscope.Cache.Block
   alias EtheroscopeEcto.Parity.{Contract, VariableState}
 
   schema "contracts" do
@@ -54,7 +55,7 @@ defmodule EtheroscopeEcto.Parity.Contract do
   defp store_contract(_addr, resp = {:error, _err}), do: resp
   defp store_contract(addr, {:ok, abi}) do
     # Logger.info "Storing: contract #{addr}"
-    case create_contract(%{address: addr, abi: abi}) do
+    case create_contract(%{address: addr, abi: abi, variables: parse_contract_abi(abi)}) do
       resp = {:ok, _c} -> resp
       {:error, chgset} ->
         Error.build_error_db(chgset.errors, "Store Failed: contract #{addr}.")
@@ -82,8 +83,13 @@ defmodule EtheroscopeEcto.Parity.Contract do
   defp load_block_numbers(addr) do
     case get(addr) do
       {:ok, contract = %Contract{blocks: []}} -> {:not_found, contract}
-      {:ok, contract}                         -> {:stale, contract} # assume it's always stale for now
-      resp = {:error, _err}                   -> resp
+      {:ok, contract} ->
+        if Block.up_to_date?(contract.most_recent_block) do
+          {:ok, contract.blocks}
+        else
+          {:stale, contract}
+        end
+      resp = {:error, _err} -> resp
     end
   end
 
@@ -109,9 +115,9 @@ defmodule EtheroscopeEcto.Parity.Contract do
   end
 
   defp store_block_numbers(contract, new_blocks) do
-    case contract |> update_contract(%{blocks: contract.blocks ++ new_blocks, most_recent_block: Enum.max(new_blocks)}) do
-      {:ok, new_contract} -> {:ok, new_contract.blocks}
-      {:error, err}       -> Error.build_error_db(err, "Not Stored: contract blocks for #{contract.address}")
+    case contract |> update_contract(%{blocks: contract.blocks ++ new_blocks, most_recent_block: Block.get_current!()}) do
+      {:ok, _new_contract} -> {:ok, new_blocks}
+      {:error, err}        -> Error.build_error_db(err, "Not Stored: contract blocks for #{contract.address}")
     end
   end
 
@@ -120,26 +126,8 @@ defmodule EtheroscopeEcto.Parity.Contract do
   @spec get_contract_abi(String.t()) :: EtheroscopeEcto.db_status()
   def get_contract_abi(addr) do
     case get(addr) do
-      {:ok, contract}       -> {:ok, contract.abi}
+      {:ok, contract}       -> {:ok, %{abi: contract.abi, variables: contract.variables}}
       resp = {:error, _err} -> resp
-    end
-  end
-
-  ################################### VARIABLES ###################################
-
-  @spec get_contract_variables(String.t()) :: EtheroscopeEcto.db_status()
-  def get_contract_variables(addr) do
-    case get(addr) do
-      {:ok, ctr = %Contract{variables: [], abi: abi}} -> abi |> parse_contract_abi |> store_contract_variables(ctr)
-      {:ok, %Contract{variables: vars}}               -> {:ok, vars}
-      {:error, err}                                   -> Error.build_error_db(err, "Fetch Failed: contract variables for #{addr}.")
-    end
-  end
-
-  defp store_contract_variables(vars, contract) do
-    case update_contract(contract, %{variables: vars}) do
-      {:ok, contract} -> {:ok, contract.variables}
-      {:error, err}   -> Error.build_error_db(err, "Not Stored: contract variables for #{contract.address}")
     end
   end
 end

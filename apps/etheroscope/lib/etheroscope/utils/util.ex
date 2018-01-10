@@ -3,6 +3,17 @@ defmodule Etheroscope.Util do
     Etheroscope.Util will allow global access to tools defined within the context.
   """
 
+  def max([]), do: -1
+  def max(l),  do: Enum.max(l)
+
+  def map(collection, func) do
+    collection
+    |> Enum.map(&(Task.async(fn -> func.(&1) end)))
+    |> Enum.map(&Task.await/1)
+  end
+
+  # REQUIRY FUNCTIONS
+
   def essential do
     quote do
       require Logger

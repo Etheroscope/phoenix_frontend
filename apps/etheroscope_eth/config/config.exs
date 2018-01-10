@@ -27,6 +27,11 @@ config :ethereumex,
   port: 8545,
   timeout: :infinity
 
+# Configures Elixir's Logger
+config :logger, :console,
+  format: "$time [ETH] $metadata[$level] $message\n",
+  metadata: [:request_id]
+
 # It is also possible to import configuration files, relative to this
 # directory. For example, you can emulate configuration per environment
 # by uncommenting the line below and defining dev.exs, test.exs and such.

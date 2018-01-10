@@ -7,20 +7,20 @@
   roles:
     - role: common
     - role: nginx
-      
+
   tasks:
     - name: install docker-compose
       sudo: yes
       apt: pkg={{ item }} state=present
       with_items:
         - docker-compose
-        
+
     - name: Make app dir
       sudo: no
       shell: mkdir -p {{ deploy_app_dir }}
       changed_when: False
       become: True
-      
+
     - name: Pull sources from the repository.
       sudo: no
       git: repo={{ repo_url }}
@@ -30,22 +30,25 @@
            force=True
       become: True
       force: True
-      
+
     - name: run docker compose
       sudo: no
       shell: chdir={{ deploy_app_dir }} docker-compose up -d
+      environment:
+        - MIX_ENV: "prod"
+        - PORT: "4000"
       become: True
-      
+
     - name: remove stopped docker containers
       become: True
       shell: chdir={{ deploy_app_dir }} docker rm $(docker ps -qa --no-trunc --filter "status=exited")
       ignore_errors: yes
-      
+
     - name: remove unused docker images
       become: True
       shell: chdir={{ deploy_app_dir }} docker rmi $(docker images | grep "none" | awk '/ / { print $3 }')
       ignore_errors: yes
-      
+
     - name: copy nginx virtual host file
       sudo: yes
       template: src="{{ inventory_dir }}/templates/nginx.j2"
@@ -60,7 +63,7 @@
             dest="/etc/nginx/sites-enabled/{{app_name}}"
             state=link
       become: True
-      
+
     - name: restart nginx
       sudo: yes
       service: name=nginx state=restarted

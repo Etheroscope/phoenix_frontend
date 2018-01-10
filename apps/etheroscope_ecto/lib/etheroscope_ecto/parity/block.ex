@@ -29,7 +29,7 @@ defmodule EtheroscopeEcto.Parity.Block do
   def next_storage_module, do: EtheroscopeEth.Parity.Block
 
   def get(block_number: block_number) do
-    # Logger.info "[DB] Fetching: block #{block_number}"
+    # Logger.info "Fetching: block #{block_number}"
     with nil           <- Repo.get_by(Block, number: block_number),
          {:ok, time}   <- apply(next_storage_module(), :fetch_time, [block_number]),
          {:ok, _block} <- create_block(%{number: block_number, time: time})

@@ -15,8 +15,7 @@ use Mix.Config
 # which you typically run after static files are built.
 config :etheroscope_web, EtheroscopeWeb.Endpoint,
   load_from_system_env: true,
-  url: [host: "production-api.etheroscope.info", port: 80],
-  cache_static_manifest: "priv/static/cache_manifest.json"
+  url: [host: "production-api.etheroscope.info", port: 4000]
 
 # ## SSL Support
 #

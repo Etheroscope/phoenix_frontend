@@ -13,8 +13,7 @@ config :etheroscope_web,
 config :etheroscope_web, EtheroscopeWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "D8bWJP+B2Pdwh+neZBBU5c2nt6Qme6a0PUnCG6tzZhJn009ga6MD1/0ztIw3Uam0",
-  pubsub: [name: EtheroscopeWeb.PubSub,
-           adapter: Phoenix.PubSub.PG2]
+  pubsub: [name: EtheroscopeWeb.PubSub, adapter: Phoenix.PubSub.PG2]
 
 # Configures Elixir's Logger
 config :logger, :console,
