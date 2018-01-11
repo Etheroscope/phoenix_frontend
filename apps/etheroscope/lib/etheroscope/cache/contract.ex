@@ -19,7 +19,7 @@ defmodule Etheroscope.Cache.Contract do
   defp get_new_blocks(address, blocks) do
     resp = {status, new_blocks} = apply(next_storage_module(), :get_block_numbers, [address])
     if status == :ok do
-      Cache.add_elem_with_expiration(:contract_blocks, {address, blocks ++ new_blocks}, default_ttl())
+      Cache.add_elem_with_expiration(:contract_blocks, {address, blocks ++ new_blocks, new_blocks}, default_ttl())
     end
     {status, blocks ++ new_blocks, new_blocks}
   end
