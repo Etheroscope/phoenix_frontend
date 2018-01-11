@@ -20,8 +20,8 @@ defmodule EtheroscopeEcto.History do
         VariableState.store_all(vars, address)
 
         VariableState.fetch_all_variable_states(address, variable)
-      resp = {:error, _err} ->
-        resp
+      resp = {:error, _err} -> resp
+      {:error, err, _data}  -> {:error, err}
     end
   end
 
