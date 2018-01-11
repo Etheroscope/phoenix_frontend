@@ -27,7 +27,7 @@ defmodule Etheroscope.Notifier.Email do
   def notify(_), do: {:error, "[NOTIFIER] Bad Parameters"}
 
   def subscribe(email, contract, variable) do
-    notify(%{
+    subscribe(%{
       email_address: email,
       contract: contract,
       variable: variable
