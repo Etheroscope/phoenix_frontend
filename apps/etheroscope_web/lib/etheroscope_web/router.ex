@@ -8,7 +8,7 @@ defmodule EtheroscopeWeb.Router do
   scope "/", EtheroscopeWeb do
     pipe_through :api
 
-    scope "/contracts:contract_address/" do
+    scope "/contracts/:contract_address/" do
       get "/",                                            ContractController, :contract
       get "/history/:variable",                           ContractController, :get_history
       post "/history/:variable",                          ContractController, :post_history

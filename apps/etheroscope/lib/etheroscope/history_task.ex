@@ -10,7 +10,7 @@ defmodule Etheroscope.HistoryTask do
     Task.Supervisor.start_child(Etheroscope.TaskSupervisor, fn -> run(start_value, address, variable, process_all_blocks?) end)
   end
 
-  def start(address, variable, process_all_blocks?) do
+  def start(address, variable, process_all_blocks? \\ false) do
     case History.get(address: address, variable: variable) do
       nil ->
         start_task([], address, variable, process_all_blocks?)
