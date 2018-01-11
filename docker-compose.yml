@@ -19,6 +19,7 @@ services:
 
   web:
     image: etheroscope
+    build: .
     command: mix do deps.get, ecto.create, ecto.migrate, phx.server
     links:
       - "db:db"

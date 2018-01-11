@@ -12,9 +12,7 @@ defmodule Etheroscope.Cache.Contract do
       {:stale, blocks} -> get_new_blocks(address, blocks)
       nil              -> get_new_blocks(address, [])
       {:error, err}    -> Error.build_error(err)
-      res              ->
-        Logger.info "ALL BLOCKS #{inspect res}"
-        res
+      res              -> res
     end
   end
 
@@ -23,6 +21,6 @@ defmodule Etheroscope.Cache.Contract do
     if status == :ok do
       Cache.add_elem_with_expiration(:contract_blocks, {address, blocks ++ new_blocks}, default_ttl())
     end
-    resp
+    {status, blocks ++ new_blocks, new_blocks}
   end
 end
