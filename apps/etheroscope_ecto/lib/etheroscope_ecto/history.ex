@@ -6,11 +6,9 @@ defmodule EtheroscopeEcto.History do
   alias EtheroscopeEcto.Parity.VariableState
   alias Etheroscope.Cache.History
 
-  def get([address: address, variable: variable, process_all_blocks?: process_all_blocks?]) do
+  def get([address: address, variable: variable]) do
     case Contract.get_block_numbers(address) do
-      {:ok, all_blocks, new_blocks} ->
-        blocks_to_process = if process_all_blocks?, do: all_blocks, else: new_blocks
-
+      {:ok, blocks_to_process} ->
         History.start_process_status(self(), length(blocks_to_process))
         # Store all processed blocks
         vars = process_blocks(blocks_to_process, address, variable)
